@@ -1,34 +1,98 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>Blog Post</title>
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-  <style>
-    body { font-family: sans-serif; max-width: 700px; margin: auto; padding: 2em; }
-    pre { background: #f4f4f4; padding: 1em; overflow: auto; }
-  </style>
-</head>
-<body>
-  <a href="index.html">← Back</a>
-  <div id="content">Loading...</div>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Blog Post</title>
+    <link rel="stylesheet" href="style.css" />
+    <!-- Marked for Markdown -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lora&display=swap"
+      rel="stylesheet"
+    />
 
-  <script>
-    const params = new URLSearchParams(window.location.search);
-    const file = params.get("file");
-    if (!file) {
-      document.getElementById("content").textContent = "No file specified.";
-    } else {
-      fetch(file)
-        .then(res => res.text())
-        .then(md => {
-          document.getElementById("content").innerHTML = marked.parse(md);
-        })
-        .catch(err => {
-          document.getElementById("content").textContent = "Error loading file.";
-          console.error(err);
-        });
-    }
-  </script>
-</body>
+    <!-- MathJax config (must be before MathJax script) -->
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [
+            ["$", "$"],
+            ["\\(", "\\)"]
+          ],
+          displayMath: [
+            ["$$", "$$"],
+            ["\\[", "\\]"]
+          ]
+        },
+        svg: { fontCache: "global" }
+      }
+    </script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+      defer
+    ></script>
+
+    <!-- Mermaid.js as module -->
+    <script type="module">
+      import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs"
+      mermaid.initialize({ startOnLoad: false })
+      window.mermaidRender = (el) => mermaid.run({ nodes: [el] })
+
+      // Markdown rendering + MathJax + Mermaid
+      const params = new URLSearchParams(window.location.search)
+      const file = params.get("file")
+
+      window.addEventListener("DOMContentLoaded", () => {
+        const postBody = document.getElementById("post-body")
+        if (!file) {
+          postBody.textContent = "No file specified."
+          return
+        }
+
+        fetch(file + "?_=" + new Date().getTime())
+          .then((res) => res.text())
+          .then((md) => {
+            postBody.innerHTML = marked.parse(md)
+
+            // MathJax rendering
+            if (window.MathJax && MathJax.typesetPromise) {
+              MathJax.typesetPromise()
+            }
+
+            // Mermaid rendering
+            const mermaidBlocks = document.querySelectorAll(
+              "pre code.language-mermaid"
+            )
+            mermaidBlocks.forEach((block) => {
+              const parent = block.parentElement
+              const code = block.textContent
+
+              const div = document.createElement("div")
+              div.className = "mermaid"
+              div.textContent = code
+
+              parent.replaceWith(div)
+              window.mermaidRender(div)
+            })
+          })
+          .catch((err) => {
+            postBody.textContent = "Error loading file."
+            console.error(err)
+          })
+      })
+    </script>
+  </head>
+
+  <body>
+    <div id="content">
+      <div class="post-header">
+        <a href="index.html" class="back-link">←Back to all posts</a>
+        <h1 id="post-title">
+          Publicly Verifiable, Private & Collaborative AI Training
+        </h1>
+        <span class="post-date">Apr 29, 2025</span>
+      </div>
+      <div id="post-body">Loading...</div>
+    </div>
+  </body>
 </html>
