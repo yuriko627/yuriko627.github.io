@@ -127,39 +127,48 @@ html, body {
 	white-space: nowrap;
   }
 
-  pre {
-	background-color: #f4f4f4;
-	padding: 1rem;
-	overflow-x: auto; /* enable horizontal scrolling */
-	border-radius: 6px;
-	max-width: 100%; /* never wider than its container */
-	box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.05);
-  }
+	pre {
+		background-color: #f4f4f4;
+		padding: 1rem;
+		overflow-x: auto;
+		border-radius: 6px;
+		max-width: 100%;
+		box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.05);
+	}
 
-  code {
-	font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
-	font-size: 0.9rem;
-	line-height: 1.5;
-	white-space: pre; /* preserve formatting */
-  }
+	pre code {
+		font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+		font-size: 0.9rem;
+		line-height: 1.5;
+		white-space: pre; /* preserve whitespace */
+	}
 
-  #post-body h2 {
-	font-size: 1.7rem;
-	font-weight: 900;
-	margin-top: 3rem;
-	margin-bottom: 0.2rem;
-	color: black; /* dark blue for testing */
-  }
+	code {
+		font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+		font-size: 0.9rem;
+		line-height: 1.5;
+		white-space: normal; 
+		word-break: break-word;
+		padding: 0.1em 0.3em;
+	}
 
-  #post-body h3 {
-	font-size: 1.4rem;
-	font-weight: 900;
-	margin-top: 3rem;
-	margin-bottom: 0.2rem;
-	color: black; /* dark blue for testing */
-  }
+	#post-body h2 {
+		font-size: 1.7rem;
+		font-weight: 900;
+		margin-top: 3rem;
+		margin-bottom: 0.2rem;
+		color: black; /* dark blue for testing */
+	}
 
-  #post-body {
-	margin-bottom: 3rem;
-  }
+	#post-body h3 {
+		font-size: 1.4rem;
+		font-weight: 900;
+		margin-top: 3rem;
+		margin-bottom: 0.2rem;
+		color: black; /* dark blue for testing */
+	}
+
+	#post-body {
+		margin-bottom: 3rem;
+	}
 
