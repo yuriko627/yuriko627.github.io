@@ -17,8 +17,8 @@ And I did not assume a P2P connection between them, so they communicate via bloc
 
 ### Protocol steps
 1. Clients locally train a model on their data using some agreed training algorithm. While training, they generate a proof $\pi_{train}$ for the correct execution of the training algorithm on their secret inputs. 
-2. Clients generate their own public and private key pair $(sk_n, pk_n)$. They submit $pk_n$ along with the proof $\pi_{train}$ to blokchain and after the proof verifies, their public keys are registered on chain, which signals their participation to this collaborative training system.
-3. Clients generate a pair-wise shared mask $m_{right}$ and $m_{left}$ with their neighboring clients `neighbor_right` and `neigobor_left`. Clients use their own private key $sk_n$ and the neighbor's public keys $pk_{n+1}$ and $pk_{n-1}$, respectively (I'm explaining the algorithm in more detail in section 2. *Masking models in clients*). After masking their model parameters (weights and bias - I'll just call them a "model" from now on), they publish the masked model $M_n$ on chain, along with zkp $\pi_{mask}$ which proves that they executed training and masking process correctly. 
+2. Clients generate their own public and private key pair $(sk_n, pk_n)$. They submit $pk_n$ along with the proof $\pi_{train}$ to blockhain and after the proof verifies, their public keys are registered on chain, which signals their participation to this collaborative training system.
+3. Clients generate a pair-wise shared mask $m_{right}$ and $m_{left}$ with their neighboring clients `neighbor_right` and `neighbor_left`. Clients use their own private key $sk_n$ and the neighbor's public keys $pk_{n+1}$ and $pk_{n-1}$, respectively (I'm explaining the algorithm in more detail in section 2. *Masking models in clients*). After masking their model parameters (weights and bias - I'll just call them a "model" from now on), they publish the masked model $M_n$ on chain, along with zkp $\pi_{mask}$ which proves that they executed training and masking process correctly. 
 4. After the masking proof $\pi_{mask}$ verifies, server fetches the masked models to aggregate them. During the aggregation, server generates a proof $\pi_{agg}$ for the correct execution of aggregation, and after the proof $\pi_{agg}$ verifies, server registers the aggregated global model $M_g$ on chain.
 5. Clients can fetch the global model $M_g$ from blockchain. 
 
@@ -123,10 +123,10 @@ For example:
 - client3 does not know $m_{1,2}$ => cannot reconstruct neither $R_1$ or $R_2$
 
 How can this be done more concretely?
-A pair of clients can generate a shared mask using (Eliptic-curve) Diffie-Hellman Key Exchange protocol as follows: 
+A pair of clients can generate a shared mask using (Elliptic-curve) Diffie-Hellman Key Exchange protocol as follows: 
 1. Each client generates their own public-private key pair. 
 2. Clients publish their public key. 
-3. Eash client locally computes the shared mask by multiplying their private key and their neighbors public key. 
+3. Each client locally computes the shared mask by multiplying their private key and their neighbors public key. 
 
 ![Screenshot 2025-04-19 at 16.12.13](https://hackmd.io/_uploads/Sk9PT4Wkeg.png)
 
@@ -161,7 +161,7 @@ There are quite a few things I want to research more and add to the system.
 
 ### 1. Training dataset validation
 Based on the assumption of not trusting the clients (that's why we ask them to prove the correct execution of local training and masking!), we should probably check that they used valid input data as well. 
-Many ways of so-called "data poisoning" attacks are known in federated learning. Namely, clients can maliciously use invalid (or carefully crafted) training inputs such that they can manupilate the global model performance.
+Many ways of so-called "data poisoning" attacks are known in federated learning. Namely, clients can maliciously use invalid (or carefully crafted) training inputs such that they can manipulate the global model performance.
 In order to prevent such attacks, how can we perform some input validation while keeping their inputs private?
 I just started researching it, but it generally seems that you can check a local model update to follow some distribution and see whether the client manipulated their training inputs. 
 ![Screenshot 2025-04-23 at 12.23.56](https://hackmd.io/_uploads/SJUkCBLJxg.png)
@@ -173,9 +173,9 @@ Currently, clients locally execute a fairly simple training algorithm, logistic 
 
 ### 3. Storing local model updates offchain
 Each client currently submits a local model — an array of 4 weights and 1 bias for 3 classes (e.g. `Model 1 (from client 1): [w111, w112, w113, w114, b11] [w121, w122, w123, w124, b12] [w131, w132, w133, w134, b13]` as I've shown in section 3. *Aggregation in server*) to blockchain directly. This works because the models are extremely small, but what if the parameter size grows? 
-Then I can easily swtich to a design where clients only publish hash of the local models on-chain, while uploading the full local model to a decentralized storage such as IPFS. 
+Then I can easily switch to a design where clients only publish hash of the local models on-chain, while uploading the full local model to a decentralized storage such as IPFS. 
 
-### 4. Batched/Packed secrete sharing for masking models
+### 4. Batched/Packed secret sharing for masking models
 This is a complete change in the cryptographic technique to mask the models. 
 
 #### For better security 
@@ -189,9 +189,9 @@ I'm now looking into a technique called *batched or packed secret sharing*, whic
 
 I'm not entirely sure about the computational efficiency or interaction overhead when it comes to multiplication (which the server needs to perform for weighted averaging, but we could potentially offload that to the clients after they fetch the global model), but this MPC-based approach might make more sense if we prioritize security and asymptotic efficiency. 
 
-Alternatively, we can create fully connected graph topology so that `n-1` clients need to collude to reveal the raw models. Though this approach comes with a cost of $O(nm)$ shared mask generations ($n$ = #clients, $m$ = #model size) . 
+Alternatively, we can create fully connected graph topology so that $n-1$ clients need to collude to reveal the raw models. Though this approach comes with a cost of $O(nm)$ shared mask generations ($n$ = #clients, $m$ = #model size) . 
 
-### 5. Dropouts tolerance + real time join 
+### 5. Dropouts tolerance + real-time clients join 
 
 Right now this system does not tolerate any client dropouts after they sign up for the system. If the server cannot obtain all the local models to aggregate, the masks added/subtracted at each remained client won't cancel out for the partial aggregation, so it will just be a gibberish value. I'm looking into this [paper](https://arxiv.org/pdf/2205.06117) which seems to solve this problem by bringing (shared-secret based) MPC in before the masking. Their protocol says each client has to communicate with $O(log(n))$ number of other clients (where $n$ is the total number of clients), in order for the server to obtain the correct aggregated model values, even after some clients drop out in the middle of the protocol. Also, is there any way to allow new client to join the training without requiring the previous nodes to redo the masking? 
 
@@ -200,6 +200,11 @@ This is probably the coolest extension that this system can have. Clients can ge
 
 -----
 
-Special thanks to [Sora](https://x.com/SoraSue77), [Ying Tong](https://x.com/therealyingtong), [Pierre](https://x.com/xyz_pierre), [Timofey](https://x.com/timofeyfey) for giving me suggestion/ideas for the future research direction, and other frieds (especially those that I spent time with at [Community Privacy Residency](https://community-privacy.github.io/) this spring!) for discussion. 
+Special thanks to [Sora](https://x.com/SoraSue77), [Ying Tong](https://x.com/therealyingtong), [Pierre](https://x.com/xyz_pierre), [Timofey](https://x.com/timofeyfey) for giving me suggestion/ideas for the future research direction, and other friends (especially those that I spent time with at [Community Privacy Residency](https://community-privacy.github.io/) this spring!) for discussion. 
 
 If you have any feedback or comments on this post and are willing to engage in a meaningful discussion, please leave them in the HackMD draft: https://hackmd.io/@yuriko/BJ1ptkh0yx 
+
+
+
+
+
