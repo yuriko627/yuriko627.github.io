@@ -6,30 +6,34 @@ html, body {
 	background: #f9f9f9;
 	color: #222;
 	line-height: 1.6;
-	width: 100%;
 	overflow-x: hidden; /* prevent scrollbars */
   }
   #content {
 	max-width: 640px;
 	margin: 0 auto;
 	padding: 0 1rem;
-	padding: 5rem 1rem 0; /* top padding added */
+	padding: 1.5rem 1rem 0; /* top padding added */
 	word-break: break-word;
 	overflow-wrap: break-word;
-	width: 100%;
   }
   #content img {
 	max-width: 100%;
 	height: auto;
 	display: block;
 	margin: 1.5rem auto;
-	border-radius: 8px;
 	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
   }
   #blog-title {
 	margin-top: 2rem;
     text-align: center;
     margin-bottom: 2rem;
+  }
+  #header-img {
+	width: 200px;
+	max-width: none;
+	height: auto;
+	display: block;
+	margin: 0 auto 1rem;
   }
   nav {
 	text-align: center;
@@ -158,3 +162,4 @@ html, body {
   #post-body {
 	margin-bottom: 3rem;
   }
+
