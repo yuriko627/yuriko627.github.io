@@ -52,7 +52,7 @@ sequenceDiagram
 
 ```
 
-### 1. Local Training in Clients 
+### 1. Local training in clients 
 There are client1-3, and each client locally trains a model using their raw data (for example client1 has input data that looks like [this]( https://github.com/yuriko627/vfl-demo/blob/main/clients/client1/training/Prover.toml)) inside ZK with logistic regression algorithm. [The Noir circuit for logistic regression](https://github.com/hashcloak/noir-mpc-ml/blob/master/src/ml.nr) was implemented by Hashcloak for their `noir-mpc-ml` project (their project report is [here](https://github.com/hashcloak/noir-mpc-ml-report)), and I've imported this circuit for the local training. Their approach, co-snark can be taken as an alternative to achieve the same goal as mine, but since my approach offloads the training process to clients and it does not require running it inside mpc, mine is more efficient. (It just runs the training algorithm inside ZK, in order to give a public verifiability.) 
 
 ![Screenshot 2025-04-22 at 18.35.50](https://hackmd.io/_uploads/H1zsXUSklx.png)
@@ -185,7 +185,7 @@ This is way worse than t-out-of-n threshold security model of MPC.
 #### For better efficiency
 In addition, current one-time pad technique requires us to [generate a mask for each model parameter](https://github.com/yuriko627/vfl-demo/blob/main/provers/masking_prover/src/mask.nr#L24), meaning that the **required number of the masks grows linearly with the size of the model parameters**. Also, because we employ fixed-point arithmetic, each mask is constrained to be less than ~124bits, but if we employ a different encoding technique of decimal numbers inside ZK, **mask bitsize should also grows linearly with the each parameter bitsize for good security**.
 
-I'm now looking into a technique called *batched or packed secret sharing*, which allows us to encode multiple secrets (e.g., weights and biases in our case) into a single polynomial. A distrusted party (e.g., a server) can then receive the shares and compute the elementwise sum across different secrets without learning their individual values.
+I'm now looking into a technique called [*batched/packed secret sharing*](https://eprint.iacr.org/2023/099.pdf#page=23), which allows us to encode multiple secrets (e.g. weights and biases in our case) into a single polynomial. A distrusted party (e.g. a server) can then receive the shares and compute the elementwise sum across different secrets without learning their individual values.
 
 I'm not entirely sure about the computational efficiency or interaction overhead when it comes to multiplication (which the server needs to perform for weighted averaging, but we could potentially offload that to the clients after they fetch the global model), but this MPC-based approach might make more sense if we prioritize security and asymptotic efficiency. 
 
