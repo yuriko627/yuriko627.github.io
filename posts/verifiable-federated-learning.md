@@ -128,7 +128,7 @@ A pair of clients can generate a shared mask using (Elliptic-curve) Diffie-Hellm
 2. Clients publish their public key. 
 3. Each client locally computes the shared mask by multiplying their private key and their neighbors public key. 
 
-![Screenshot 2025-04-19 at 16.12.13](https://hackmd.io/_uploads/Sk9PT4Wkeg.png)
+![Screenshot 2025-05-03 at 10.56.15](https://hackmd.io/_uploads/HyJ_dPQexe.png)
 
 For the shared key generation, I used this [ECDH Library](https://github.com/privacy-scaling-explorations/zk-kit.noir/tree/main/packages/ecdh) inside zk-kit.noir library set developed by PSE. 
 
