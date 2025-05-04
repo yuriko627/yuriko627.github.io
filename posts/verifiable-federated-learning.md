@@ -55,16 +55,16 @@ sequenceDiagram
 ### 1. Local training in clients 
 There are client1-3, and each client locally trains a model using their raw data (for example client1 has input data that looks like [this]( https://github.com/yuriko627/vfl-demo/blob/main/clients/client1/training/Prover.toml)) inside ZK with logistic regression algorithm. [The Noir circuit for logistic regression](https://github.com/hashcloak/noir-mpc-ml/blob/master/src/ml.nr) was implemented by Hashcloak for their `noir-mpc-ml` project (their project report is [here](https://github.com/hashcloak/noir-mpc-ml-report)), and I've imported this circuit for the local training. Their approach, co-snark can be taken as an alternative to achieve the same goal as mine, but since my approach offloads the training process to clients and it does not require running it inside MPC, mine is more efficient. (It just runs the training algorithm inside ZK, in order to give a public verifiability.) 
 
-<figure style="text-align: center;">
-  <img src="https://hackmd.io/_uploads/H1zsXUSklx.png" />
-  <figcaption style="font-style: italic; margin-top: 0.1rem;">
+<figure style="text-align: center; margin: 2rem;">
+  <img src="https://hackmd.io/_uploads/H1zsXUSklx.png" style="margin: 0;"/>
+  <figcaption style="font-style: italic; margin-top: 0.5rem;">
     Architecture for HashCloak's CoSNARK-ML
   </figcaption>
 </figure>
 
-<figure style="text-align: center;">
-  <img src="https://hackmd.io/_uploads/rkxhm8BJgg.png" />
-  <figcaption style="font-style: italic; margin-top: 0.1rem;">
+<figure style="text-align: center; margin: 2rem;">
+  <img src="https://hackmd.io/_uploads/rkxhm8BJgg.png" style="margin: 0;"/>
+  <figcaption style="font-style: italic; margin-top: 0.5rem;">
     Architecture for my construction: offloading training to the client side
   </figcaption>
 </figure>
@@ -165,7 +165,7 @@ You can check the aggregation prover [here](https://github.com/yuriko627/vfl-dem
 ### Notes on fixed-point arithmetic
 When writing masking and aggregation provers, I had to be careful about the **fixed-point arithmetic range checks**. In machine learning, you almost always get decimal numbers in your operation. However, since you cannot directly express decimal numbers inside zk circuit, there is this technique of using [fixed-point arithmetic](https://github.com/hashcloak/noir-mpc-ml-report/blob/main/src/fixed-point-arithmetic.md): you scale small decimal numbers by some fixed factor and use the first half field elements (<= ~126bits) as positive numbers, and the second half (>= ~126bits) to represent negative numbers. Following this encoding rule, you need to add a bit-size check for the operands such as `assert_bitsize::<n>` before performing each arithmetic operation in order to not overflow from the field. (With haskcloak's [`noir-mpc-ml` library](https://github.com/hashcloak/noir-mpc-ml/tree/master), you can call these assertions in a more customizable way. Underlying [`Quantized` struct](https://github.com/hashcloak/noir-mpc-ml/blob/master/src/quantized.nr) will not automatically assert them before arithmetic operations. That way, you can reduce the number of constraints and make the zk circuit more performant.
 
-For more concreteness, I added detailed comments before each `assert_bitsize` in my code, so if you're curious about how to do safe addition and multiplication in fixed-point arithmetic, you can go check them in my [masking prover](https://github.com/yuriko627/vfl-demo/blob/main/provers/masking_prover/src/mask.nr) and [aggregation prover](https://github.com/yuriko627/vfl-demo/blob/main/provers/aggregation_prover/src/aggregate.nr).   
+For more concreteness, I added detailed comments before each `assert_bitsize` in my code, so if you're curious about how to do safe addition and multiplication in fixed-point arithmetic, you can go check them in my [masking prover](https://github.com/yuriko627/vfl-demo/blob/main/provers/masking_prover/src/mask.nr) and [aggregation prover](https://github.com/yuriko627/vfl-demo/blob/main/provers/aggregation_prover/src/aggregate.nr).
 
 
 ## Future Research Direction
@@ -185,7 +185,7 @@ Currently, clients locally execute a fairly simple training algorithm, logistic 
 
 ### 3. Storing local model updates offchain
 Each client currently submits a local model — an array of 4 weights and 1 bias for 3 classes (e.g. `Model 1 (from client 1): [w111, w112, w113, w114, b11] [w121, w122, w123, w124, b12] [w131, w132, w133, w134, b13]` as I've shown in section 3. *Aggregation in server*) to blockchain directly. This works because the models are extremely small, but what if the parameter size grows? 
-Then I can easily switch to a design where clients only publish hash of the local models on-chain, while uploading the full local model to a decentralized storage such as IPFS. 
+Then I can easily switch to a design where clients only publish hash of the local models on-chain, while uploading the full local model to a decentralized storage such as IPFS. When the server retrieves local models from IPFS, they recompute the hash of the fetched file and verify it matches the hash stored on-chain.
 
 ### 4. Batched/Packed secret sharing for masking models
 This is a complete change in the cryptographic technique to mask the models. 
