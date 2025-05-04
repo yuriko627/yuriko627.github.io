@@ -53,11 +53,22 @@ sequenceDiagram
 ```
 
 ### 1. Local training in clients 
-There are client1-3, and each client locally trains a model using their raw data (for example client1 has input data that looks like [this]( https://github.com/yuriko627/vfl-demo/blob/main/clients/client1/training/Prover.toml)) inside ZK with logistic regression algorithm. [The Noir circuit for logistic regression](https://github.com/hashcloak/noir-mpc-ml/blob/master/src/ml.nr) was implemented by Hashcloak for their `noir-mpc-ml` project (their project report is [here](https://github.com/hashcloak/noir-mpc-ml-report)), and I've imported this circuit for the local training. Their approach, co-snark can be taken as an alternative to achieve the same goal as mine, but since my approach offloads the training process to clients and it does not require running it inside mpc, mine is more efficient. (It just runs the training algorithm inside ZK, in order to give a public verifiability.) 
+There are client1-3, and each client locally trains a model using their raw data (for example client1 has input data that looks like [this]( https://github.com/yuriko627/vfl-demo/blob/main/clients/client1/training/Prover.toml)) inside ZK with logistic regression algorithm. [The Noir circuit for logistic regression](https://github.com/hashcloak/noir-mpc-ml/blob/master/src/ml.nr) was implemented by Hashcloak for their `noir-mpc-ml` project (their project report is [here](https://github.com/hashcloak/noir-mpc-ml-report)), and I've imported this circuit for the local training. Their approach, co-snark can be taken as an alternative to achieve the same goal as mine, but since my approach offloads the training process to clients and it does not require running it inside MPC, mine is more efficient. (It just runs the training algorithm inside ZK, in order to give a public verifiability.) 
 
-![Screenshot 2025-04-22 at 18.35.50](https://hackmd.io/_uploads/H1zsXUSklx.png)
+<figure style="text-align: center;">
+  <img src="https://hackmd.io/_uploads/H1zsXUSklx.png" />
+  <figcaption style="font-style: italic; margin-top: 0.1rem;">
+    Architecture for HashCloak's CoSNARK-ML
+  </figcaption>
+</figure>
 
-![Screenshot 2025-04-22 at 18.35.59](https://hackmd.io/_uploads/rkxhm8BJgg.png)
+<figure style="text-align: center;">
+  <img src="https://hackmd.io/_uploads/rkxhm8BJgg.png" />
+  <figcaption style="font-style: italic; margin-top: 0.1rem;">
+    Architecture for my construction: offloading training to the client side
+  </figcaption>
+</figure>
+
 
 For example, Hashcloak has obtained the results below (with 3 MPC nodes):
 
@@ -145,6 +156,7 @@ Aggregation process was fairly simple. The server first has to fetch the publish
 // Model 3 (from client 3): [w311, w312, w313, w314, b31] [w321, w322, w323, w324, b32] [w331, w332, w333, w334, b33]
 // Aggregated global model: [w111+w211+w311, w112+w212+w312,...,b11+b21+b31]...
 ```
+
 One thing to mention is, since I wanted to perform weighted average for the model aggregation, clients actually submit `weights * number of samples` and `bias * number of samples` along with the `number of samples` they used for their training. (They append `number of samples` in an array of local models submitted to blockchain)
 
 The server divides the sum for `weights` and `bias` by the total number of samples at the end. 
