@@ -1,0 +1,4 @@
+# Temporary build files
+.new_post_flag
+post_links.html
+posts/*/template.processed.html

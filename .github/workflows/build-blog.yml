@@ -14,10 +14,18 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Touch updated content.md files
+        run: |
+          # Find content.md files that were changed in this commit (to enable direct push from hackmd)
+          git diff --name-only HEAD^ HEAD | grep 'posts/.*/content.md' | while read file; do
+            echo "Touching $file to update timestamp"
+            touch "$file"
+          done
+
       - name: Install Pandoc
         run: sudo apt-get update && sudo apt-get install -y pandoc
 
-      - name: Build individual post pages
+      - name: Build individual post pages (if new post is added or older post is modified)
         run: |
           echo "" > post_links.html
           new_post_links="false"
@@ -49,7 +57,7 @@ jobs:
                 --from=markdown-citations+autolink_bare_uris
 
               # Append new post's link to the top page
-              echo "<li><time datetime="$date">$date</time> <a href="/posts/$post_slug/">$title</a></li>" >> post_links.html
+              echo "<li><time datetime=\"$date\">$date</time> <a href=\"/posts/$post_slug/\">$title</a></li>" >> post_links.html
               new_post_links="true"
 
             elif [ "$mdfile" -nt "$htmlfile" ]; then
@@ -82,6 +90,10 @@ jobs:
             echo "🏠 No new posts — home page unchanged."
           fi
 
+      - name: Clean up
+        if: always()
+        run: rm -f .new_post_flag post_links.html posts/*/template.processed.html
+
       - name: Commit and push generated HTML
         run: |
           git config --global user.name "github-actions"
@@ -89,6 +101,7 @@ jobs:
           git add posts/**/index.html index.html || true
           git commit -m "Auto-generated index.html for modified or new posts" || echo "No changes"
           git push
+
 
 
 
