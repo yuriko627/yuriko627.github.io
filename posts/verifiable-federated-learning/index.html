@@ -30,7 +30,7 @@
         if (window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise()
 
         const mermaidBlocks = document.querySelectorAll(
-          "pre code.language-mermaid"
+          "pre code.language-mermaid, pre.mermaid > code"
         )
         mermaidBlocks.forEach((block) => {
           const code = block.textContent
