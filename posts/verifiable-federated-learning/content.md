@@ -1,4 +1,8 @@
-
+---
+title: Publicly Verifiable, Private & Collaborative AI Training
+date: 2025-04-30
+description: An exploration of verifiable, privacy-preserving & collaborative AI model training in a decentralized network
+---
 
 In this post, I will leave some notes about [Verifiable Federated Learning CLI Demo](https://github.com/yuriko627/vfl-demo) I have prototyped. 
 
@@ -55,24 +59,27 @@ sequenceDiagram
 ### 1. Local training in clients 
 There are client1-3, and each client locally trains a model using their raw data (for example client1 has input data that looks like [this]( https://github.com/yuriko627/vfl-demo/blob/main/clients/client1/training/Prover.toml)) inside ZK with logistic regression algorithm. [The Noir circuit for logistic regression](https://github.com/hashcloak/noir-mpc-ml/blob/master/src/ml.nr) was implemented by Hashcloak for their `noir-mpc-ml` project (their project report is [here](https://github.com/hashcloak/noir-mpc-ml-report)), and I've imported this circuit for the local training. Their approach, co-snark can be taken as an alternative to achieve the same goal as mine, but since my approach offloads the training process to clients and it does not require running it inside MPC, mine is more efficient. (It just runs the training algorithm inside ZK, in order to give a public verifiability.) 
 
+
 <figure style="text-align: center; margin: 2rem;">
+
   <img src="https://hackmd.io/_uploads/H1zsXUSklx.png" style="margin: 0;"/>
-  <figcaption style="font-style: italic; margin-top: 0.5rem;">
-    Architecture for HashCloak's CoSNARK-ML
-  </figcaption>
+
+  <figcaption style="font-style: italic; margin-top: 0.5rem;">Architecture for HashCloak's CoSNARK-ML</figcaption>
+
 </figure>
+
 
 <figure style="text-align: center; margin: 2rem;">
-  <img src="https://hackmd.io/_uploads/rkxhm8BJgg.png" style="margin: 0;"/>
-  <figcaption style="font-style: italic; margin-top: 0.5rem;">
-    Architecture for my construction: offloading training to the client side
-  </figcaption>
-</figure>
 
+  <img src="https://hackmd.io/_uploads/rkxhm8BJgg.png" style="margin: 0;"/>
+
+  <figcaption style="font-style: italic; margin-top: 0.5rem;">Architecture for my construction: offloading training to the client side</figcaption>
+
+</figure>
 
 For example, Hashcloak has obtained the results below (with 3 MPC nodes):
 
-![Screenshot 2025-04-24 at 09.57.01](https://hackmd.io/_uploads/SydZ6uPyel.png)
+<img src="https://hackmd.io/_uploads/SydZ6uPyel.png" alt="Hashcloak's result" />
 
 (reference: [Benchmarks](https://github.com/hashcloak/noir-mpc-ml))
 
@@ -102,7 +109,8 @@ In summary, clients generate pair-wise mask, add/subtract it from their raw mode
 
 Let's say we set clients in a ring topology as below and lable the pair-wise noise/mask between paired clients as $m_{start-node, end-node}$. (labeling nodes counterclockwise in this case)
 
-![Screenshot 2025-04-22 at 18.41.03](https://hackmd.io/_uploads/SJqa48Skgg.png)
+<img src="https://hackmd.io/_uploads/SJqa48Skgg.png" alt="diagram to place clients in ring topology" />
+
 
 
 - Between `client1` and `client2`, they generate a shared mask $m_{1,2}$
@@ -111,8 +119,7 @@ Let's say we set clients in a ring topology as below and lable the pair-wise noi
 
 Imagine, each client **add** a mask they generated with their **right** neighbor client, and **subtract** a mask they generated with the **left** neighbor client. 
 
-
-![Screenshot 2025-04-19 at 15.19.12](https://hackmd.io/_uploads/H13dFrrJxg.png)
+<img src="https://hackmd.io/_uploads/H13dFrrJxg.png" alt="diagram to show cancel out masks" />
 
 For each client $n$, masked model $Mn$ is calculated by raw model $Rn$ + mask with the right neighbor $m_{right}$ - mask with the left neighbor $m_{left}$.
 
@@ -139,7 +146,8 @@ A pair of clients can generate a shared mask using (Elliptic-curve) Diffie-Hellm
 2. Clients publish their public key. 
 3. Each client locally computes the shared mask by multiplying their private key and their neighbors public key. 
 
-![Screenshot 2025-05-03 at 10.56.15](https://hackmd.io/_uploads/HyJ_dPQexe.png)
+<img src="https://hackmd.io/_uploads/HyJ_dPQexe.png" alt="diagram to show ECDH key exchange based pair-wise shared masked generation" />
+
 
 For the shared key generation, I used this [ECDH Library](https://github.com/privacy-scaling-explorations/zk-kit.noir/tree/main/packages/ecdh) inside zk-kit.noir library set developed by PSE. 
 
@@ -156,7 +164,6 @@ Aggregation process was fairly simple. The server first has to fetch the publish
 // Model 3 (from client 3): [w311, w312, w313, w314, b31] [w321, w322, w323, w324, b32] [w331, w332, w333, w334, b33]
 // Aggregated global model: [w111+w211+w311, w112+w212+w312,...,b11+b21+b31]...
 ```
-
 One thing to mention is, since I wanted to perform weighted average for the model aggregation, clients actually submit `weights * number of samples` and `bias * number of samples` along with the `number of samples` they used for their training. (They append `number of samples` in an array of local models submitted to blockchain)
 
 The server divides the sum for `weights` and `bias` by the total number of samples at the end. 
@@ -165,7 +172,7 @@ You can check the aggregation prover [here](https://github.com/yuriko627/vfl-dem
 ### Notes on fixed-point arithmetic
 When writing masking and aggregation provers, I had to be careful about the **fixed-point arithmetic range checks**. In machine learning, you almost always get decimal numbers in your operation. However, since you cannot directly express decimal numbers inside zk circuit, there is this technique of using [fixed-point arithmetic](https://github.com/hashcloak/noir-mpc-ml-report/blob/main/src/fixed-point-arithmetic.md): you scale small decimal numbers by some fixed factor and use the first half field elements (<= ~126bits) as positive numbers, and the second half (>= ~126bits) to represent negative numbers. Following this encoding rule, you need to add a bit-size check for the operands such as `assert_bitsize::<n>` before performing each arithmetic operation in order to not overflow from the field. (With haskcloak's [`noir-mpc-ml` library](https://github.com/hashcloak/noir-mpc-ml/tree/master), you can call these assertions in a more customizable way. Underlying [`Quantized` struct](https://github.com/hashcloak/noir-mpc-ml/blob/master/src/quantized.nr) will not automatically assert them before arithmetic operations. That way, you can reduce the number of constraints and make the zk circuit more performant.
 
-For more concreteness, I added detailed comments before each `assert_bitsize` in my code, so if you're curious about how to do safe addition and multiplication in fixed-point arithmetic, you can go check them in my [masking prover](https://github.com/yuriko627/vfl-demo/blob/main/provers/masking_prover/src/mask.nr) and [aggregation prover](https://github.com/yuriko627/vfl-demo/blob/main/provers/aggregation_prover/src/aggregate.nr).
+For more concreteness, I added detailed comments before each `assert_bitsize` in my code, so if you're curious about how to do safe addition and multiplication in fixed-point arithmetic, you can go check them in my [masking prover](https://github.com/yuriko627/vfl-demo/blob/main/provers/masking_prover/src/mask.nr) and [aggregation prover](https://github.com/yuriko627/vfl-demo/blob/main/provers/aggregation_prover/src/aggregate.nr). 
 
 
 ## Future Research Direction
@@ -176,7 +183,8 @@ Based on the assumption of not trusting the clients (that's why we ask them to p
 Many ways of so-called "data poisoning" attacks are known in federated learning. Namely, clients can maliciously use invalid (or carefully crafted) training inputs such that they can manipulate the global model performance.
 In order to prevent such attacks, how can we perform some input validation while keeping their inputs private?
 I just started researching it, but it generally seems that you can check a local model update to follow some distribution and see whether the client manipulated their training inputs. 
-![Screenshot 2025-04-23 at 12.23.56](https://hackmd.io/_uploads/SJUkCBLJxg.png)
+<img src="https://hackmd.io/_uploads/SJUkCBLJxg.png" alt="slide from poisoning attack prevention talk" />
+
 
 This [talk](https://www.youtube.com/watch?v=mdMpQMe5_KQ) (which I got the above picture from) explains an interesting research on how to combat backdoor attacks - a type of data poisoning attacks, without entirely eliminating the manipulated model updates from the malicious clients (so that they can keep the global model accuracy fairly high). If we were to employ such validation, it has to be done on the client-side inside ZK before masking the model.
 
@@ -185,7 +193,7 @@ Currently, clients locally execute a fairly simple training algorithm, logistic 
 
 ### 3. Storing local model updates offchain
 Each client currently submits a local model — an array of 4 weights and 1 bias for 3 classes (e.g. `Model 1 (from client 1): [w111, w112, w113, w114, b11] [w121, w122, w123, w124, b12] [w131, w132, w133, w134, b13]` as I've shown in section 3. *Aggregation in server*) to blockchain directly. This works because the models are extremely small, but what if the parameter size grows? 
-Then I can easily switch to a design where clients only publish hash of the local models on-chain, while uploading the full local model to a decentralized storage such as IPFS. When the server retrieves local models from IPFS, they recompute the hash of the fetched file and verify it matches the hash stored on-chain.
+Then I can easily switch to a design where clients only publish hash of the local models on-chain, while uploading the full local model to a decentralized storage such as IPFS. When the server retrieves local models from IPFS, they recompute the hash of the fetched file and verify it matches the hash stored on-chain. 
 
 ### 4. Batched/Packed secret sharing for masking models
 This is a complete change in the cryptographic technique to mask the models. 
@@ -215,7 +223,6 @@ This is probably the coolest extension that this system can have. Clients can ge
 Special thanks to [Sora](https://x.com/SoraSue77), [Ying Tong](https://x.com/therealyingtong), [Pierre](https://x.com/xyz_pierre), [Timofey](https://x.com/timofeyfey) for giving me suggestion/ideas for the future research direction, and other friends (especially those that I spent time with at [Community Privacy Residency](https://community-privacy.github.io/) this spring!) for discussion. 
 
 If you have any feedback or comments on this post and are willing to engage in a meaningful discussion, please leave them in the HackMD draft: https://hackmd.io/@yuriko/BJ1ptkh0yx 
-
 
 
 

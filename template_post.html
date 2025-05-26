@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="$title$" />
+    <meta name="twitter:description" content="$description$" />
+    <meta
+      property="og:image"
+      content="https://yuriko.io/posts/$slug$/thumbnail.png"
+    />
+    <title>$title$</title>
+    <link rel="stylesheet" href="/style.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lora&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="../mathjax-config.js" defer></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+      defer
+    ></script>
+    <script type="module">
+      import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs"
+      mermaid.initialize({ startOnLoad: false })
+      window.mermaidRender = (el) => mermaid.run({ nodes: [el] })
+
+      window.addEventListener("DOMContentLoaded", () => {
+        if (window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise()
+
+        const mermaidBlocks = document.querySelectorAll(
+          "pre code.language-mermaid, pre.mermaid > code"
+        )
+        mermaidBlocks.forEach((block) => {
+          const code = block.textContent
+          const div = document.createElement("div")
+          div.className = "mermaid"
+          div.textContent = code
+          block.parentElement.replaceWith(div)
+          window.mermaidRender(div)
+        })
+      })
+    </script>
+  </head>
+
+  <body>
+    <div id="content">
+      <div class="post-header">
+        <a href="yuriko.io" class="back-link">← Back to all posts</a>
+        <h1 id="post-title">$title$</h1>
+        <span class="post-date">$date$</span>
+      </div>
+      <div id="post-body">$body$</div>
+    </div>
+  </body>
+</html>

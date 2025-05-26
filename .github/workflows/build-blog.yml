@@ -1,0 +1,96 @@
+name: Build and Update Blog
+
+on:
+  push:
+    paths:
+      - 'posts/**/content.md'
+      - 'template_post.html'
+      - 'template_home.html'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Pandoc
+        run: sudo apt-get update && sudo apt-get install -y pandoc
+
+      - name: Build individual post pages
+        run: |
+          echo "" > post_links.html
+          new_post_links="false"
+
+          for mdfile in posts/*/content.md; do
+            post_dir=$(dirname "$mdfile")
+            post_slug=$(basename "$post_dir")
+            htmlfile="$post_dir/index.html"
+
+            # Extract metadata from content markdown
+            title=$(sed -n 's/^title: //p' "$mdfile")
+            date=$(sed -n 's/^date: //p' "$mdfile")
+
+            if [ ! -f "$htmlfile" ]; then
+              echo "🆕 New post: $post_slug"
+              cp template_post.html "$post_dir/template.processed.html"
+
+              echo "📄 Processing post: $post_slug"
+              echo "📝 Title: $title"
+              echo "📅 Date: $date"
+              echo "🔍 Template content preview (template.processed.html):"
+              head -n 30 "$post_dir/template.processed.html"
+
+              pandoc "$mdfile" \
+                -o "$htmlfile" \
+                --template="$post_dir/template.processed.html" \
+                --standalone \
+                -M slug="$post_slug" \
+                --from=markdown-citations+autolink_bare_uris
+
+              # Append new post's link to the top page
+              echo "<li><time datetime="$date">$date</time> <a href="/posts/$post_slug/">$title</a></li>" >> post_links.html
+              new_post_links="true"
+
+            elif [ "$mdfile" -nt "$htmlfile" ]; then
+              echo "✏️  Modified post: $post_slug (rebuilding)"
+              cp template_post.html "$post_dir/template.processed.html"
+
+              pandoc "$mdfile" \
+                -o "$htmlfile" \
+                --template="$post_dir/template.processed.html" \
+                --standalone \
+                -M slug="$post_slug" \
+                --from=markdown-citations+autolink_bare_uris
+            else
+              echo "✅ Up-to-date: $post_slug"
+            fi
+          done
+
+          echo $new_post_links > .new_post_flag
+
+      - name: Build top page (only if new posts were added)
+        if: success()
+        run: |
+          if grep -q true .new_post_flag; then
+            echo "🧩 Updating home page with new post links..."
+            sed '/{{POST_LIST}}/ {
+              r post_links.html
+              d
+            }' template_home.html > index.html
+          else
+            echo "🏠 No new posts — home page unchanged."
+          fi
+
+      - name: Commit and push generated HTML
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+          git add posts/**/index.html index.html || true
+          git commit -m "Auto-generated index.html for modified or new posts" || echo "No changes"
+          # git push
+
+
+
+
+
