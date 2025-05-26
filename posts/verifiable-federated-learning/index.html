@@ -95,15 +95,15 @@
 <h3 id="local-training-in-clients">1. Local training in clients</h3>
 <p>There are client1-3, and each client locally trains a model using their raw data (for example client1 has input data that looks like <a href="https://github.com/yuriko627/vfl-demo/blob/main/clients/client1/training/Prover.toml">this</a>) inside ZK with logistic regression algorithm. <a href="https://github.com/hashcloak/noir-mpc-ml/blob/master/src/ml.nr">The Noir circuit for logistic regression</a> was implemented by Hashcloak for their <code>noir-mpc-ml</code> project (their project report is <a href="https://github.com/hashcloak/noir-mpc-ml-report">here</a>), and I’ve imported this circuit for the local training. Their approach, co-snark can be taken as an alternative to achieve the same goal as mine, but since my approach offloads the training process to clients and it does not require running it inside MPC, mine is more efficient. (It just runs the training algorithm inside ZK, in order to give a public verifiability.)</p>
 <figure style="text-align: center; margin: 2rem;">
-<img src="https://hackmd.io/_uploads/H1zsXUSklx.png" style="margin: 0;"/>
+<p><img src="https://hackmd.io/_uploads/H1zsXUSklx.png" style="margin: 0;"/></p>
 <figcaption style="font-style: italic; margin-top: 0.5rem;">
-Architecture for HashCloak’s CoSNARK-ML
+<pre><code>Architecture for HashCloak&#39;s CoSNARK-ML</code></pre>
 </figcaption>
 </figure>
 <figure style="text-align: center; margin: 2rem;">
-<img src="https://hackmd.io/_uploads/rkxhm8BJgg.png" style="margin: 0;"/>
+<p><img src="https://hackmd.io/_uploads/rkxhm8BJgg.png" style="margin: 0;"/></p>
 <figcaption style="font-style: italic; margin-top: 0.5rem;">
-Architecture for my construction: offloading training to the client side
+<pre><code>Architecture for my construction: offloading training to the client side</code></pre>
 </figcaption>
 </figure>
 <p>For example, Hashcloak has obtained the results below (with 3 MPC nodes):</p>
@@ -150,18 +150,14 @@ Architecture for my construction: offloading training to the client side
 <p>I employed a technique from <a href="https://eprint.iacr.org/2017/281.pdf">the original federated learning paper</a>, which explains how clients send a masked model to a server and a server aggregates them to obtain a global model removing the masks at the end.</p>
 <p>In summary, clients generate pair-wise mask, add/subtract it from their raw model so that they cancel with each other when the server aggregates them.</p>
 <p>Let’s say we set clients in a ring topology as below and lable the pair-wise noise/mask between paired clients as <span class="math inline"><em>m</em><sub><em>s</em><em>t</em><em>a</em><em>r</em><em>t</em> − <em>n</em><em>o</em><em>d</em><em>e</em>, <em>e</em><em>n</em><em>d</em> − <em>n</em><em>o</em><em>d</em><em>e</em></sub></span>. (labeling nodes counterclockwise in this case)</p>
-<figure>
-<img src="https://hackmd.io/_uploads/SJqa48Skgg.png" alt="Screenshot 2025-04-22 at 18.41.03" /><figcaption>Screenshot 2025-04-22 at 18.41.03</figcaption>
-</figure>
+<p><img src="https://hackmd.io/_uploads/SJqa48Skgg.png" alt="diagram to place clients in ring topology" /></p>
 <ul>
 <li>Between <code>client1</code> and <code>client2</code>, they generate a shared mask <span class="math inline"><em>m</em><sub>1, 2</sub></span></li>
 <li>Between <code>client2</code> and <code>client3</code>, they generate a shared mask <span class="math inline"><em>m</em><sub>2, 3</sub></span></li>
 <li>Between <code>client3</code> and <code>client1</code>, they generate a shared mask <span class="math inline"><em>m</em><sub>3, 1</sub></span></li>
 </ul>
 <p>Imagine, each client <strong>add</strong> a mask they generated with their <strong>right</strong> neighbor client, and <strong>subtract</strong> a mask they generated with the <strong>left</strong> neighbor client.</p>
-<figure>
-<img src="https://hackmd.io/_uploads/H13dFrrJxg.png" alt="Screenshot 2025-04-19 at 15.19.12" /><figcaption>Screenshot 2025-04-19 at 15.19.12</figcaption>
-</figure>
+<p><img src="https://hackmd.io/_uploads/H13dFrrJxg.png" alt="diagram to show cancel out masks" /></p>
 <p>For each client <span class="math inline"><em>n</em></span>, masked model <span class="math inline"><em>M</em><em>n</em></span> is calculated by raw model <span class="math inline"><em>R</em><em>n</em></span> + mask with the right neighbor <span class="math inline"><em>m</em><sub><em>r</em><em>i</em><em>g</em><em>h</em><em>t</em></sub></span> - mask with the left neighbor <span class="math inline"><em>m</em><sub><em>l</em><em>e</em><em>f</em><em>t</em></sub></span>.</p>
 <p>For example, - client1: masked model <span class="math inline"><em>M</em><sub>1</sub></span> = raw model <span class="math inline"><em>R</em><sub>1</sub></span> + <span class="math inline"><em>m</em><sub>1, 2</sub></span> - <span class="math inline"><em>m</em><sub>3, 1</sub></span> - client2: masked model <span class="math inline"><em>M</em><sub>2</sub></span> = raw model <span class="math inline"><em>R</em><sub>2</sub></span> + <span class="math inline"><em>m</em><sub>2, 3</sub></span> - <span class="math inline"><em>m</em><sub>1, 2</sub></span> - client3: masked model <span class="math inline"><em>M</em><sub>3</sub></span> = raw model <span class="math inline"><em>R</em><sub>3</sub></span> + <span class="math inline"><em>m</em><sub>3, 1</sub></span> - <span class="math inline"><em>m</em><sub>2, 3</sub></span></p>
 <p>Then, when a server sums up the masked models <span class="math inline"><em>M</em><sub><em>n</em></sub></span>,</p>
@@ -169,9 +165,7 @@ Architecture for my construction: offloading training to the client side
 <p>You can see how shared masks between each client will cancel out, and that way server can calculate the <strong>sum of raw models <span class="math inline"><em>R</em><sub><em>n</em></sub></span> without knowing its individual values</strong>.</p>
 <p>About the privacy on raw models <span class="math inline"><em>R</em><sub><em>n</em></sub></span>, each client can only calculate the masks with their own neighbors. For example: - client1 does not know <span class="math inline"><em>m</em><sub>2, 3</sub></span> =&gt; cannot reconstruct neither <span class="math inline"><em>R</em><sub>2</sub></span> or <span class="math inline"><em>R</em><sub>3</sub></span> - client2 does not know <span class="math inline"><em>m</em><sub>3, 1</sub></span> =&gt; cannot reconstruct neither <span class="math inline"><em>R</em><sub>1</sub></span> or <span class="math inline"><em>R</em><sub>3</sub></span> - client3 does not know <span class="math inline"><em>m</em><sub>1, 2</sub></span> =&gt; cannot reconstruct neither <span class="math inline"><em>R</em><sub>1</sub></span> or <span class="math inline"><em>R</em><sub>2</sub></span></p>
 <p>How can this be done more concretely? A pair of clients can generate a shared mask using (Elliptic-curve) Diffie-Hellman Key Exchange protocol as follows: 1. Each client generates their own public-private key pair. 2. Clients publish their public key. 3. Each client locally computes the shared mask by multiplying their private key and their neighbors public key.</p>
-<figure>
-<img src="https://hackmd.io/_uploads/HyJ_dPQexe.png" alt="Screenshot 2025-05-03 at 10.56.15" /><figcaption>Screenshot 2025-05-03 at 10.56.15</figcaption>
-</figure>
+<p><img src="https://hackmd.io/_uploads/HyJ_dPQexe.png" alt="diagram to show ECDH key exchange based pair-wise shared masked generation" /></p>
 <p>For the shared key generation, I used this <a href="https://github.com/privacy-scaling-explorations/zk-kit.noir/tree/main/packages/ecdh">ECDH Library</a> inside zk-kit.noir library set developed by PSE.</p>
 <p>You can check the whole masking prover <a href="https://github.com/yuriko627/vfl-demo/blob/main/provers/masking_prover/src/mask.nr">here</a>.</p>
 <h3 id="aggregation-in-server">3. Aggregation in server</h3>
