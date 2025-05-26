@@ -97,13 +97,13 @@
 <figure style="text-align: center; margin: 2rem;">
 <p><img src="https://hackmd.io/_uploads/H1zsXUSklx.png" style="margin: 0;"/></p>
 <figcaption style="font-style: italic; margin-top: 0.5rem;">
-<pre><code>Architecture for HashCloak&#39;s CoSNARK-ML</code></pre>
+Architecture for HashCloak’s CoSNARK-ML
 </figcaption>
 </figure>
 <figure style="text-align: center; margin: 2rem;">
 <p><img src="https://hackmd.io/_uploads/rkxhm8BJgg.png" style="margin: 0;"/></p>
 <figcaption style="font-style: italic; margin-top: 0.5rem;">
-<pre><code>Architecture for my construction: offloading training to the client side</code></pre>
+Architecture for my construction: offloading training to the client side
 </figcaption>
 </figure>
 <p>For example, Hashcloak has obtained the results below (with 3 MPC nodes):</p>
@@ -182,7 +182,7 @@
 <h2 id="future-research-direction">Future Research Direction</h2>
 <p>There are quite a few things I want to research more and add to the system.</p>
 <h3 id="training-dataset-validation">1. Training dataset validation</h3>
-<p>Based on the assumption of not trusting the clients (that’s why we ask them to prove the correct execution of local training and masking!), we should probably check that they used valid input data as well. Many ways of so-called “data poisoning” attacks are known in federated learning. Namely, clients can maliciously use invalid (or carefully crafted) training inputs such that they can manipulate the global model performance. In order to prevent such attacks, how can we perform some input validation while keeping their inputs private? I just started researching it, but it generally seems that you can check a local model update to follow some distribution and see whether the client manipulated their training inputs. <img src="https://hackmd.io/_uploads/SJUkCBLJxg.png" alt="Screenshot 2025-04-23 at 12.23.56" /></p>
+<p>Based on the assumption of not trusting the clients (that’s why we ask them to prove the correct execution of local training and masking!), we should probably check that they used valid input data as well. Many ways of so-called “data poisoning” attacks are known in federated learning. Namely, clients can maliciously use invalid (or carefully crafted) training inputs such that they can manipulate the global model performance. In order to prevent such attacks, how can we perform some input validation while keeping their inputs private? I just started researching it, but it generally seems that you can check a local model update to follow some distribution and see whether the client manipulated their training inputs. <img src="https://hackmd.io/_uploads/SJUkCBLJxg.png" alt="slide from poisoning attack prevention talk" /></p>
 <p>This <a href="https://www.youtube.com/watch?v=mdMpQMe5_KQ">talk</a> (which I got the above picture from) explains an interesting research on how to combat backdoor attacks - a type of data poisoning attacks, without entirely eliminating the manipulated model updates from the malicious clients (so that they can keep the global model accuracy fairly high). If we were to employ such validation, it has to be done on the client-side inside ZK before masking the model.</p>
 <h3 id="zk-circuit-for-more-complex-training-algorithm-or-fine-tuning">2. ZK circuit for more complex training algorithm… or fine-tuning?</h3>
 <p>Currently, clients locally execute a fairly simple training algorithm, logistic regression inside ZK. But can we use more complex algorithms such as neural networks? I’m looking into <a href="https://github.com/lyronctk/zator">Zator project</a> to see if there is anything reusable for training. Also, maybe instead of executing the whole training on the client side, we can broadcast pre-trained model onchain, and let client perform just fine-tuning on top of it. Doing so, how much can we reduce the computational cost on the client side? (Note that this task is more of my intellectual curiosity. Actually for verifiable federated learning use case ideas in my mind, I believe using models with more interpretability such as logistic regression makes more sense)</p>
