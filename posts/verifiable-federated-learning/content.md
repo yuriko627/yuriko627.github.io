@@ -8,7 +8,6 @@ title: Publicly Verifiable, Private & Collaborative AI Training
 date: 2025-04-30
 description: An exploration of verifiable, privacy-preserving & collaborative AI model training in a decentralized network
 ---
-
 In this post, I will leave some notes about [Verifiable Federated Learning CLI Demo](https://github.com/yuriko627/vfl-demo) I have prototyped. 
 
 In a nutshell, this system allows **mutually distrusted parties** (let's say nodes in a decentralized network like Ethereum) **to privately contribute their data and collaboratively train an AI model with public verifiability**.
@@ -30,6 +29,7 @@ In a separate post, I will share more about my vision for this technology with s
    2.4 [Batched/Packed secret sharing for masking models](#batchedpacked-secret-sharing-for-masking-models)  
    2.5 [Clients dropouts tolerance + real-time join](#clients-dropouts-tolerance--real-time-join)  
    2.6 [Reward system](#reward-system)
+
 
 ## Architecture Overview
 In my CLI demo, there are 4 parties simulated:
@@ -250,7 +250,6 @@ title: Publicly Verifiable, Private & Collaborative AI Training
 date: 2025-04-30
 description: An exploration of verifiable, privacy-preserving & collaborative AI model training in a decentralized network
 ---
-
 In this post, I will leave some notes about [Verifiable Federated Learning CLI Demo](https://github.com/yuriko627/vfl-demo) I have prototyped. 
 
 In a nutshell, this system allows **mutually distrusted parties** (let's say nodes in a decentralized network like Ethereum) **to privately contribute their data and collaboratively train an AI model with public verifiability**.
@@ -272,6 +271,7 @@ In a separate post, I will share more about my vision for this technology with s
    2.4 [Batched/Packed secret sharing for masking models](#batchedpacked-secret-sharing-for-masking-models)  
    2.5 [Clients dropouts tolerance + real-time join](#clients-dropouts-tolerance--real-time-join)  
    2.6 [Reward system](#reward-system)
+
 
 ## Architecture Overview
 In my CLI demo, there are 4 parties simulated:
