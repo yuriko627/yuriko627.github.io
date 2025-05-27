@@ -2,6 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Publicly Verifiable, Private
 &amp; Collaborative AI Training" />
@@ -19,8 +20,28 @@ Training</title>
       href="https://fonts.googleapis.com/css2?family=Lora&display=swap"
       rel="stylesheet"
     />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="/assets/favicon/apple-touch-icon.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="/assets/favicon/favicon-32x32.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="/assets/favicon/favicon-16x16.png"
+    />
+    <link rel="manifest" href="/assets/favicon/site.webmanifest" />
+
+    <!-- Scripts for content processing -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="../mathjax-config.js" defer></script>
+    <script src="/mathjax-config.js" defer></script>
     <script
       src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
       defer
@@ -31,8 +52,12 @@ Training</title>
       window.mermaidRender = (el) => mermaid.run({ nodes: [el] })
 
       window.addEventListener("DOMContentLoaded", () => {
-        if (window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise()
+        // Typeset MathJax
+        if (window.MathJax && MathJax.typesetPromise) {
+          MathJax.typesetPromise()
+        }
 
+        // Render Mermaid diagrams
         const mermaidBlocks = document.querySelectorAll(
           "pre code.language-mermaid, pre.mermaid > code"
         )
@@ -46,9 +71,20 @@ Training</title>
         })
       })
     </script>
+
+    <!-- AnchorJS for clickable headlines -->
     <script src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.1/anchor.min.js"></script>
     <script>
-      anchors.add("h1, h2, h3, h4, h5, h6") // You can customize which headers get anchors
+      document.addEventListener("DOMContentLoaded", function () {
+        var anchors = new AnchorJS({
+          icon: "🔗",
+          placement: "left",
+          visible: "hover"
+        })
+        anchors.add(
+          "#post-body h2, #post-body h3, #post-body h4, #post-body h5, #post-body h6"
+        )
+      })
     </script>
   </head>
 
