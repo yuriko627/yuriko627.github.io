@@ -1,131 +1,132 @@
 html, body {
-	margin: 0;
-	padding: 0;
-	font-family: 'Lora', Georgia, serif;
-	font-size: 14px;
-	background: #f9f9f9;
-	color: #222;
-	line-height: 1.6;
-	overflow-x: hidden; /* prevent scrollbars */
-  }
-  #content {
-	max-width: 640px;
-	margin: 0 auto;
-	padding: 0 1rem;
-	padding: 1.5rem 1rem 0; /* top padding added */
-	word-break: break-word;
-	overflow-wrap: break-word;
-  }
-  #content img {
-	max-width: 100%;
-	height: auto;
-	display: block;
-	margin: 1.5rem auto;
-	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-  }
-  #blog-title {
-	margin-top: 2rem;
-    text-align: center;
-    margin-bottom: 2rem;
-  }
-  #header-img {
-	width: 200px;
-	max-width: none;
-	height: auto;
-	display: block;
-	margin: 0 auto 1rem;
-  }
-  nav {
-	text-align: center;
-	margin-bottom: 1.5rem;
-  }
-  nav a {
-	margin: 0 10px;
-	text-decoration: none;
-	color: #333;
-  }
-  ul.post-list {
-	list-style: none;
-	padding-left: 0;
-  }
-  ul.post-list li {
-	margin: 1rem 0;
-  }
-  ul.post-list time {
-	font-style: italic;
-	margin-right: 1em;
-	color: #777;
-  }
-  footer {
-	margin-top: 3rem;
-	text-align: center;
-  }
-  .social-icons a {
-	margin: 0 10px;
-	text-decoration: none;
-	color: #444;
-	font-size: 1rem;
-  }
-  .social-icons svg {
-	width: 18px;
-	height: 18px;
-	vertical-align: middle;
-  }
-  a {
-	color: #8fc5d4; /* Tailwind blue-500 */
-	text-decoration: none;
-  }
-  a:hover {
-	text-decoration: underline;
-  }
-  * {
-	box-sizing: border-box;
-  }
+		margin: 0;
+		padding: 0;
+		font-family: 'Lora', Georgia, serif;
+		font-size: 14px;
+		background: #f9f9f9;
+		color: #222;
+		line-height: 1.6;
+		overflow-x: hidden; /* prevent scrollbars */
+		scroll-behavior: smooth;
+	}
+	#content {
+		max-width: 640px;
+		margin: 0 auto;
+		padding: 0 1rem;
+		padding: 1.5rem 1rem 0; /* top padding added */
+		word-break: break-word;
+		overflow-wrap: break-word;
+	}
+	#content img {
+		max-width: 100%;
+		height: auto;
+		display: block;
+		margin: 1.5rem auto;
+		box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+	}
+	#blog-title {
+		margin-top: 2rem;
+		text-align: center;
+		margin-bottom: 2rem;
+	}
+	#header-img {
+		width: 200px;
+		max-width: none;
+		height: auto;
+		display: block;
+		margin: 0 auto 1rem;
+	}
+	nav {
+		text-align: center;
+		margin-bottom: 1.5rem;
+	}
+	nav a {
+		margin: 0 10px;
+		text-decoration: none;
+		color: #333;
+	}
+	ul.post-list {
+		list-style: none;
+		padding-left: 0;
+	}
+	ul.post-list li {
+		margin: 1rem 0;
+	}
+	ul.post-list time {
+		font-style: italic;
+		margin-right: 1em;
+		color: #777;
+	}
+	footer {
+		margin-top: 3rem;
+		text-align: center;
+	}
+	.social-icons a {
+		margin: 0 10px;
+		text-decoration: none;
+		color: #444;
+		font-size: 1rem;
+	}
+	.social-icons svg {
+		width: 18px;
+		height: 18px;
+		vertical-align: middle;
+	}
+	a {
+		color: #8fc5d4; /* Tailwind blue-500 */
+		text-decoration: none;
+	}
+	a:hover {
+		text-decoration: underline;
+	}
+	* {
+		box-sizing: border-box;
+	}
 
-  .back-link {
-	font-size: 1rem;
-	color: #8fc5d4;
-	text-decoration: none;
-	margin-top: 2rem;
-  }
+	.back-link {
+		font-size: 1rem;
+		color: #8fc5d4;
+		text-decoration: none;
+		margin-top: 2rem;
+	}
 
-  .back-link:hover {
-	text-decoration: underline;
-  }
-  table {
-	border-collapse: collapse;
-	margin: 1rem 0;
-  }
+	.back-link:hover {
+		text-decoration: underline;
+	}
+	table {
+		border-collapse: collapse;
+		margin: 1rem 0;
+	}
 
-  th, td {
-	border: 1px solid #ccc;
-	padding: 0.5rem;
-	text-align: center;
-  }
+	th, td {
+		border: 1px solid #ccc;
+		padding: 0.5rem;
+		text-align: center;
+	}
 
-  th {
-	background-color: #f0f0f0;
-	font-weight: bold;
-  }
-  .post-header {
-	display: flex;
-	justify-content: space-between;
-	align-items: flex-end;
-	flex-wrap: wrap;
-	gap: 0.5rem;
-	border-bottom: 1px solid #ccc;
-	padding-bottom: 0.5rem;
-  }
+	th {
+		background-color: #f0f0f0;
+		font-weight: bold;
+	}
+	.post-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-end;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+		border-bottom: 1px solid #ccc;
+		padding-bottom: 0.5rem;
+	}
 
-  #post-title {
-	margin-top: 3rem; /* or try 4rem for more space */
-  }
+	#post-title {
+		margin-top: 3rem; /* or try 4rem for more space */
+	}
 
-  .post-date {
-	font-size: 0.9rem;
-	color: #666;
-	white-space: nowrap;
-  }
+	.post-date {
+		font-size: 0.9rem;
+		color: #666;
+		white-space: nowrap;
+	}
 
 	pre {
 		background-color: #f4f4f4;
@@ -172,3 +173,38 @@ html, body {
 		margin-bottom: 3rem;
 	}
 
+	.anchorjs-link {
+		top: 50% !important;
+		left: -0.3em !important;
+		transform: translateY(-50%) !important;
+		text-decoration: none;
+		font-style: normal;
+		font-variant: normal;
+		font-weight: normal;
+		line-height: 1;
+		color: #aaa; /* Example color, adjust as needed */
+		padding-right: 0.375em; /* Adds a little space between icon and heading text */
+							/* This padding is relative to the heading's font size */
+		margin-left: -0.85em;   /* Pulls it slightly to the left if it's inline. */
+								/* Adjust if it feels too far or not far enough. */
+								/* This margin is relative to the heading's font size. */
+
+		/* --- KEY PROPERTY FOR SIZE --- */
+		font-size: 0.7em; /* Makes the icon 70% of the heading's font size. */
+						/* Adjust this value: e.g., 0.6em, 0.8em, etc. */
+						/* You can also use absolute units like 12px, but relative units (em) */
+						/* are often better as they scale with the heading size. */
+	}
+	.anchorjs-link:hover {
+		color: #555; /* Example hover color */
+	}
+	/* Ensure headings have relative positioning if you need fine-tuned absolute positioning of the icon,
+		but for inline icons, this might not be strictly necessary.
+		AnchorJS usually handles placement well. */
+	#post-body h2,
+	#post-body h3,
+	#post-body h4,
+	#post-body h5,
+	#post-body h6 {
+		position: relative;
+	}
