@@ -2,6 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="$title$" />
     <meta name="twitter:description" content="$description$" />
@@ -18,23 +19,25 @@
     <link
       rel="apple-touch-icon"
       sizes="180x180"
-      href="../../assets/favicon/apple-touch-icon.png"
+      href="/assets/favicon/apple-touch-icon.png"
     />
     <link
       rel="icon"
       type="image/png"
       sizes="32x32"
-      href="../../assets/favicon/favicon-32x32.png"
+      href="/assets/favicon/favicon-32x32.png"
     />
     <link
       rel="icon"
       type="image/png"
       sizes="16x16"
-      href="../../assets/favicon/favicon-16x16.png"
+      href="/assets/favicon/favicon-16x16.png"
     />
-    <link rel="manifest" href="../../assets/favicon/site.webmanifest" />
+    <link rel="manifest" href="/assets/favicon/site.webmanifest" />
+
+    <!-- Scripts for content processing -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="../mathjax-config.js" defer></script>
+    <script src="/mathjax-config.js" defer></script>
     <script
       src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
       defer
@@ -45,8 +48,12 @@
       window.mermaidRender = (el) => mermaid.run({ nodes: [el] })
 
       window.addEventListener("DOMContentLoaded", () => {
-        if (window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise()
+        // Typeset MathJax
+        if (window.MathJax && MathJax.typesetPromise) {
+          MathJax.typesetPromise()
+        }
 
+        // Render Mermaid diagrams
         const mermaidBlocks = document.querySelectorAll(
           "pre code.language-mermaid, pre.mermaid > code"
         )
@@ -60,9 +67,21 @@
         })
       })
     </script>
+
+    <!-- AnchorJS for clickable headlines -->
     <script src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.1/anchor.min.js"></script>
     <script>
-      anchors.add("h1, h2, h3, h4, h5, h6") // You can customize which headers get anchors
+      document.addEventListener("DOMContentLoaded", function () {
+        var anchors = new AnchorJS({
+          icon: '<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg" style="display:inline-block;vertical-align:middle;"><path d="M4.715 6.542 3.343 7.914a3 3 0 1 0 4.243 4.243l1.828-1.829A3 3 0 0 0 8.586 5.5L8 6.086a1.002 1.002 0 0 0-.154.199 2 2 0 0 1 .861 3.337L6.88 11.45a2 2 0 1 1-2.83-2.83l.793-.792a4.018 4.018 0 0 1-.128-1.287z"/><path d="M6.586 4.672A3 3 0 0 0 7.414 9.5l.775-.776a2 2 0 0 1-.896-3.346L9.12 3.55a2 2 0 1 1 2.83 2.83l-.793.792c.112.42.155.855.128 1.287l1.07-1.071a3 3 0 1 0-4.243-4.243L6.586 4.672z"/></svg>',
+          placement: "left",
+          visible: "hover"
+        })
+        // Add anchors to H2 through H6 tags within the post body
+        anchors.add(
+          "#post-body h2, #post-body h3, #post-body h4, #post-body h5, #post-body h6"
+        )
+      })
     </script>
   </head>
 
