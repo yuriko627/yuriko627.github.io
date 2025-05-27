@@ -1,103 +1,189 @@
-name: Build and Add/Update Blog Post
+name: Build and Deploy Blog
 
 on:
   push:
     paths:
-      - 'posts/**/content.md'
+      - 'posts/*/content.md'
+      - 'template_post.html' # If changes to template should rebuild posts
+      - 'template_home.html' # If changes to home template should rebuild home
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }} # GITHUB_TOKEN is automatically available
+          fetch-depth: 0 # Fetch all history to enable diffing
 
-      - name: Identify changed content.md files and save to file
+      - name: Identify and touch modified markdown files
+        id: touch_files
         run: |
-          git fetch origin main
-          git diff --name-only origin/main...HEAD | grep 'posts/.*/content.md' > changed_posts.txt || true
-
-          echo "Changed content.md files:"
-          cat changed_posts.txt || echo "None"
+          echo "SHA before: ${{ github.event.before }}"
+          echo "SHA current: ${{ github.sha }}"
+          echo "Identifying changed markdown files between ${{ github.event.before }} and ${{ github.sha }}..."
+          git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep 'posts/.*/content.md' | while read -r file; do
+            if [ -f "$file" ]; then
+              echo "Touching $file to update its timestamp."
+              touch "$file"
+            else
+              echo "Warning: Changed file $file from diff not found in checkout. Skipping touch."
+            fi
+          done
+        shell: bash
 
       - name: Install Pandoc
-        run: sudo apt-get update && sudo apt-get install -y pandoc
-
-      - name: Build individual post pages (if new post is added or older post is modified)
         run: |
-          echo "" > post_links.html
-          new_post_links="false"
+          sudo apt-get update
+          sudo apt-get install -y pandoc
 
+      - name: Generate HTML from Markdown
+        run: |
+          echo "Starting HTML generation process..."
+          echo "" > post_links.html
+          new_post_links="false" # Initialize to string "false"
+
+          # Ensure template_post.html exists
+          if [ ! -f "template_post.html" ]; then
+            echo "Error: template_post.html not found!"
+            exit 1
+          fi
+
+          # Loop through all markdown files. The 'touch' step above ensures
+          # that only genuinely modified ones (or new ones) will be newer.
           for mdfile in posts/*/content.md; do
+            if [ ! -f "$mdfile" ]; then
+              echo "Skipping non-existent mdfile (possibly from deleted post): $mdfile"
+              continue
+            fi
+
             post_dir=$(dirname "$mdfile")
             post_slug=$(basename "$post_dir")
             htmlfile="$post_dir/index.html"
 
-            # Extract metadata from content markdown
-            title=$(sed -n 's/^title: //p' "$mdfile")
-            date=$(sed -n 's/^date: //p' "$mdfile")
+            echo "Processing $mdfile for post $post_slug..."
 
+            # Extract metadata
+            title=$(sed -n 's/^title: *//p' "$mdfile")
+            date=$(sed -n 's/^date: *//p' "$mdfile")
+
+            # Default title/date if not found
+            if [ -z "$title" ]; then title="Untitled Post - $post_slug"; fi
+            if [ -z "$date" ]; then date=$(date -I); fi # Use current date if not specified
+
+            # Check if HTML needs to be (re)generated
+            # 1. HTML file doesn't exist (new post)
+            # 2. Markdown file is newer than HTML file (updated post)
+            # 3. Post template is newer than HTML file (template updated)
+            rebuild_post="false"
             if [ ! -f "$htmlfile" ]; then
               echo "🆕 New post: $post_slug"
+              rebuild_post="true"
+              new_post_links="true" # Mark that homepage needs update for new post
+            elif [ "$mdfile" -nt "$htmlfile" ]; then
+              echo "✏️ Modified post content: $post_slug (rebuilding)"
+              rebuild_post="true"
+            elif [ "template_post.html" -nt "$htmlfile" ]; then
+              echo "🔄 Post template updated: $post_slug (rebuilding)"
+              rebuild_post="true"
+            else
+              echo "✅ Up-to-date: $post_slug"
+            fi
+
+            if [ "$rebuild_post" = "true" ]; then
+              # Prepare template for this specific post
+              # (e.g., if you were substituting metadata into the template before pandoc)
+              # For now, just copying as in your original logic
               cp template_post.html "$post_dir/template.processed.html"
 
               echo "📄 Processing post: $post_slug"
               echo "📝 Title: $title"
               echo "📅 Date: $date"
-              echo "🔍 Template content preview (template.processed.html):"
-              head -n 30 "$post_dir/template.processed.html"
+              # echo "🔍 Template content preview (template.processed.html):"
+              # head -n 5 "$post_dir/template.processed.html" # Keep it short
 
               pandoc "$mdfile" \
                 -o "$htmlfile" \
                 --template="$post_dir/template.processed.html" \
                 --standalone \
                 -M slug="$post_slug" \
+                -M title="$title" \
+                -M date="$date" \
                 --from=markdown-citations+autolink_bare_uris
-
-              echo "<li><time datetime=\"$date\">$date</time> <a href=\"/posts/$post_slug/\">$title</a></li>" >> post_links.html
-              new_post_links="true"
-
-            elif grep -q "$mdfile" changed_posts.txt; then
-              echo "✏️  Modified post: $post_slug (rebuilding)"
-              cp template_post.html "$post_dir/template.processed.html"
-
-              pandoc "$mdfile" \
-                -o "$htmlfile" \
-                --template="$post_dir/template.processed.html" \
-                --standalone \
-                -M slug="$post_slug" \
-                --from=markdown-citations+autolink_bare_uris
-            else
-              echo "✅ Up-to-date: $post_slug"
+              
+              echo "Generated $htmlfile"
             fi
+
+            # Always add to post_links.html for sorting later, or only if new/title changed
+            # For simplicity, let's rebuild post_links.html every time based on current .md files
+            # (This part is outside the rebuild_post check if you want all posts listed)
+            echo "<li><time datetime=\"$date\">$date</time> <a href=\"/posts/$post_slug/\">$title</a></li>" >> temp_post_links.html
           done
 
-          echo $new_post_links > .new_post_flag
+          # Sort post_links by date (descending, assuming YYYY-MM-DD format)
+          if [ -f "temp_post_links.html" ]; then
+            sort -r -k2 -t'>' temp_post_links.html > post_links.html
+            rm temp_post_links.html
+          fi
+          
+          # Store the flag for whether new links were added OR if home template changed
+          home_needs_update="false"
+          if [ "$new_post_links" = "true" ]; then
+            home_needs_update="true"
+          elif [ "template_home.html" -nt "index.html" ] && [ -f "index.html" ]; then
+            echo "🏠 Home template updated, rebuilding index.html"
+            home_needs_update="true"
+          elif [ ! -f "index.html" ]; then # If index.html doesn't exist at all
+             echo "🏠 index.html not found, will generate."
+             home_needs_update="true"
+          fi
+          echo "$home_needs_update" > .home_needs_update_flag
+        shell: bash
 
-      - name: Build top page (only if new posts were added)
-        if: success()
+      - name: Update Home Page if needed
         run: |
-          if grep -q true .new_post_flag; then
-            echo "🧩 Updating home page with new post links..."
+          if [ ! -f "template_home.html" ]; then
+            echo "Error: template_home.html not found! Cannot update home page."
+            exit 1
+          fi
+          if grep -q true .home_needs_update_flag; then
+            echo "🧩 Updating home page..."
+            if [ ! -s post_links.html ]; then # Check if post_links.html is empty or non-existent
+                echo "<p>No posts yet.</p>" > post_links.html # Default content
+            fi
             sed '/{{POST_LIST}}/ {
               r post_links.html
               d
             }' template_home.html > index.html
+            echo "🏠 Home page updated."
           else
-            echo "🏠 No new posts — home page unchanged."
+            echo "🏠 Home page is up-to-date or no new posts/template changes."
           fi
+        shell: bash
 
-      - name: Clean up
-        if: always()
-        run: rm -f .new_post_flag post_links.html posts/*/template.processed.html changed_posts.txt
-
-      - name: Commit and push generated HTML
+      - name: Clean up temporary files
         run: |
-          git config --global user.name "github-actions"
-          git config --global user.email "github-actions@github.com"
-          git add . || true
-          git commit -m "Auto-generated index.html for modified or new posts (also deleted build artifacts)" || echo "No changes"
-          git push
+          rm -f .home_needs_update_flag post_links.html posts/*/template.processed.html
+        shell: bash
+
+      - name: Commit and push changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A . # Stage all changes (new/modified HTML files, index.html)
+          # Check if there are changes to commit
+          if git diff --staged --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "docs: Auto-generate HTML for posts and update index
+
+          [skip ci]" # Add [skip ci] to prevent CI loop if you trigger on all pushes to main
+            git push
+            echo "Changes committed and pushed."
+          fi
+        shell: bash
 
 
 
