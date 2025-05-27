@@ -1,11 +1,9 @@
-name: Build and Update Blog
+name: Build and Add/Update Blog Post
 
 on:
   push:
     paths:
       - 'posts/**/content.md'
-      - 'template_post.html'
-      - 'template_home.html'
 
 jobs:
   build:
@@ -14,13 +12,13 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Touch updated content.md files
+      - name: Identify changed content.md files and save to file
         run: |
           git fetch origin main
-          git diff --name-only origin/main...HEAD | grep 'posts/.*/content.md' | while read file; do
-            echo "Touching $file to update timestamp"
-            touch "$file"
-          done
+          git diff --name-only origin/main...HEAD | grep 'posts/.*/content.md' > changed_posts.txt || true
+
+          echo "Changed content.md files:"
+          cat changed_posts.txt || echo "None"
 
       - name: Install Pandoc
         run: sudo apt-get update && sudo apt-get install -y pandoc
@@ -56,11 +54,10 @@ jobs:
                 -M slug="$post_slug" \
                 --from=markdown-citations+autolink_bare_uris
 
-              # Append new post's link to the top page
               echo "<li><time datetime=\"$date\">$date</time> <a href=\"/posts/$post_slug/\">$title</a></li>" >> post_links.html
               new_post_links="true"
 
-            elif [ "$mdfile" -nt "$htmlfile" ]; then
+            elif grep -q "$mdfile" changed_posts.txt; then
               echo "✏️  Modified post: $post_slug (rebuilding)"
               cp template_post.html "$post_dir/template.processed.html"
 
@@ -92,7 +89,7 @@ jobs:
 
       - name: Clean up
         if: always()
-        run: rm -f .new_post_flag post_links.html posts/*/template.processed.html
+        run: rm -f .new_post_flag post_links.html posts/*/template.processed.html changed_posts.txt
 
       - name: Commit and push generated HTML
         run: |
