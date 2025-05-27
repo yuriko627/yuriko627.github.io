@@ -16,7 +16,6 @@ In a nutshell, this system allows **mutually distrusted parties** (let's say nod
 In a separate post, I will share more about my vision for this technology with some fitting use cases in my mind. 
 
 ## Table of Contents
-
 1. [Architecture Overview](#architecture-overview)  
    1.0 [Protocol steps](#protocol-steps)  
    1.1 [Local training in clients](#local-training-in-clients)  
@@ -31,8 +30,6 @@ In a separate post, I will share more about my vision for this technology with s
    2.4 [Batched/Packed secret sharing for masking models](#batchedpacked-secret-sharing-for-masking-models)  
    2.5 [Clients dropouts tolerance + real-time join](#clients-dropouts-tolerance--real-time-join)  
    2.6 [Reward system](#reward-system)
-
-
 
 ## Architecture Overview
 
@@ -264,7 +261,6 @@ In a nutshell, this system allows **mutually distrusted parties** (let's say nod
 In a separate post, I will share more about my vision for this technology with some fitting use cases in my mind. 
 
 ## Table of Contents
-
 1. [Architecture Overview](#architecture-overview)  
    1.0 [Protocol steps](#protocol-steps)  
    1.1 [Local training in clients](#local-training-in-clients)  
@@ -279,8 +275,6 @@ In a separate post, I will share more about my vision for this technology with s
    2.4 [Batched/Packed secret sharing for masking models](#batchedpacked-secret-sharing-for-masking-models)  
    2.5 [Clients dropouts tolerance + real-time join](#clients-dropouts-tolerance--real-time-join)  
    2.6 [Reward system](#reward-system)
-
-
 
 ## Architecture Overview
 
