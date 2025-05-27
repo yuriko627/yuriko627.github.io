@@ -98,8 +98,8 @@ jobs:
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@github.com"
-          git add posts/**/index.html index.html || true
-          git commit -m "Auto-generated index.html for modified or new posts" || echo "No changes"
+          git add . || true
+          git commit -m "Auto-generated index.html for modified or new posts (also deleted build artifacts)" || echo "No changes"
           git push
 
 
