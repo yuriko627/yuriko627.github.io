@@ -32,7 +32,6 @@ In a separate post, I will share more about my vision for this technology with s
    2.6 [Reward system](#reward-system)
 
 ## Architecture Overview
-
 In my CLI demo, there are 4 parties simulated:
 - 3 distributed clients that locally train a model on their own raw data
 - 1 server that aggregates the local models submitted by clients
@@ -79,7 +78,6 @@ sequenceDiagram
 ### 1. Local training in clients 
 There are client1-3, and each client locally trains a model using their raw data (for example client1 has input data that looks like [this]( https://github.com/yuriko627/vfl-demo/blob/main/clients/client1/training/Prover.toml)) inside ZK with logistic regression algorithm. [The Noir circuit for logistic regression](https://github.com/hashcloak/noir-mpc-ml/blob/master/src/ml.nr) was implemented by Hashcloak for their `noir-mpc-ml` project (their project report is [here](https://github.com/hashcloak/noir-mpc-ml-report)), and I've imported this circuit for the local training. Their approach, co-snark can be taken as an alternative to achieve the same goal as mine, but since my approach offloads the training process to clients and it does not require running it inside MPC, mine is more efficient. (It just runs the training algorithm inside ZK, in order to give a public verifiability.) 
 
-
 <figure style="text-align: center; margin: 2rem;">
 
   <img src="https://hackmd.io/_uploads/H1zsXUSklx.png" style="margin: 0;"/>
@@ -112,7 +110,6 @@ Whereas my system has obtained (with 3 clients and 1 server all simulated wih Ap
 | 10     | 50            | 44                  |
 | 20     | 30            | 55                  |
 | 20     | 50            | 96                  |
-
 
 
 ### 2. Masking models in clients
@@ -277,7 +274,6 @@ In a separate post, I will share more about my vision for this technology with s
    2.6 [Reward system](#reward-system)
 
 ## Architecture Overview
-
 In my CLI demo, there are 4 parties simulated:
 - 3 distributed clients that locally train a model on their own raw data
 - 1 server that aggregates the local models submitted by clients
@@ -324,7 +320,6 @@ sequenceDiagram
 ### 1. Local training in clients 
 There are client1-3, and each client locally trains a model using their raw data (for example client1 has input data that looks like [this]( https://github.com/yuriko627/vfl-demo/blob/main/clients/client1/training/Prover.toml)) inside ZK with logistic regression algorithm. [The Noir circuit for logistic regression](https://github.com/hashcloak/noir-mpc-ml/blob/master/src/ml.nr) was implemented by Hashcloak for their `noir-mpc-ml` project (their project report is [here](https://github.com/hashcloak/noir-mpc-ml-report)), and I've imported this circuit for the local training. Their approach, co-snark can be taken as an alternative to achieve the same goal as mine, but since my approach offloads the training process to clients and it does not require running it inside MPC, mine is more efficient. (It just runs the training algorithm inside ZK, in order to give a public verifiability.) 
 
-
 <figure style="text-align: center; margin: 2rem;">
 
   <img src="https://hackmd.io/_uploads/H1zsXUSklx.png" style="margin: 0;"/>
@@ -357,7 +352,6 @@ Whereas my system has obtained (with 3 clients and 1 server all simulated wih Ap
 | 10     | 50            | 44                  |
 | 20     | 30            | 55                  |
 | 20     | 50            | 96                  |
-
 
 
 ### 2. Masking models in clients
