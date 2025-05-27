@@ -16,8 +16,8 @@ jobs:
 
       - name: Touch updated content.md files
         run: |
-          # Find content.md files that were changed in this commit (to enable direct push from hackmd)
-          git diff --name-only HEAD^ HEAD | grep 'posts/.*/content.md' | while read file; do
+          git fetch origin main
+          git diff --name-only origin/main...HEAD | grep 'posts/.*/content.md' | while read file; do
             echo "Touching $file to update timestamp"
             touch "$file"
           done
