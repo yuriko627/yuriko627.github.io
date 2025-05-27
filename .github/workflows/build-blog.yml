@@ -24,8 +24,7 @@ jobs:
           echo "SHA before: ${{ github.event.before }}"
           echo "SHA current: ${{ github.sha }}"
           echo "Identifying changed markdown files between ${{ github.event.before }} and ${{ github.sha }}..."
-          git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep 'posts/.*/content.md' | while read -r file; do
-            if [ -f "$file" ]; then
+          git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep --color=never 'posts/.*/content.md' || true | while read -r file; do
               echo "Touching $file to update its timestamp."
               touch "$file"
             else
