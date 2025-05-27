@@ -9,7 +9,6 @@ date: 2025-04-30
 description: An exploration of verifiable, privacy-preserving & collaborative AI model training in a decentralized network
 ---
 
-
 In this post, I will leave some notes about [Verifiable Federated Learning CLI Demo](https://github.com/yuriko627/vfl-demo) I have prototyped. 
 
 In a nutshell, this system allows **mutually distrusted parties** (let's say nodes in a decentralized network like Ethereum) **to privately contribute their data and collaboratively train an AI model with public verifiability**.
@@ -251,7 +250,6 @@ title: Publicly Verifiable, Private & Collaborative AI Training
 date: 2025-04-30
 description: An exploration of verifiable, privacy-preserving & collaborative AI model training in a decentralized network
 ---
-
 
 In this post, I will leave some notes about [Verifiable Federated Learning CLI Demo](https://github.com/yuriko627/vfl-demo) I have prototyped. 
 
