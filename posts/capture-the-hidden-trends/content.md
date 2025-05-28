@@ -1,5 +1,5 @@
 ---
-title: Capture the Hidden Trends - Use Cases for Private and Decentralized AI Training
+title: Capture Hidden Trends - Use Cases for Private and Decentralized AI Training
 date: 2025-05-30
 description: Use Cases for Private and Decentralized AI Training
 ---
@@ -11,28 +11,29 @@ To summarize, I prototyped a system that allows mutually distrusting parties in 
 In this post, I will explore potential use cases and social implications of this technology that I’ve been reflecting on.
 
 ## Table of Contents
-1. [Capture the Hidden Trends](#capture-the-hidden-trends)  
+1. [Capture Hidden Trends](#capture-hidden-trends)  
    1.1 [Private Data Exists in Silo](#private-data-exists-in-silo)  
    1.2 [Structural Privilege in Data Collection](#structural-privilege-in-data-collection)  
-   1.3 [Pull-style → Push-style Data Science](#pull-style--push-style-data-science)  
-2. [Use Case 1: Crowdsourced Healthcare Data Analysis Platform](#use-case-1-crowdsourced-healthcare-data-analysis-platform)
-3. [Use Case 2: Model Tailored to Marginalized Group](#use-case-2-model-tailored-to-marginalized-group)  
+   1.3 [Pull-style → Push-style Data Science](#pull-style-push-style-data-science)  
+2. [Usecase 1: Crowdsourced Health Data Analysis](#usecase-1-crowdsourced-health-data-analysis)
+3. [Usecase 2: Private Fine-tuning for Subgroups](#usecase-2-private-fine-tuning-for-subgroups)  
    3.1 [Tailor-made Models for Marginalized Communities](#tailor-made-models-for-marginalized-communities)  
    3.2 [Exporting Crypto Credit Scoring Model to TradFi](#exporting-crypto-credit-scoring-model-to-tradfi)  
    3.3 [Model Merging for Intersectional Demographics](#model-merging-for-intersectional-demographics)  
-4. [Use Case 3: Recommendation System for dApps](#use-case-3-recommendation-system-for-dapps)
-5. [Use Case 4: Privacy-preserving Model for Decoding Biometric Data](#use-case-4-privacy-preserving-model-for-decoding-biometric-data)
+4. [Usecase 3: Recommendation System for dApps](#usecase-3-recommendation-system-for-dapps)
+5. [Usecase 4: Privacy-preserving Model Training for Decoding Biometric Data](#usecase-4-privacy-preserving-model-training-for-decoding-biometric-data)
 6. [Note on Verifiability and Bonus Project Idea](#note-on-verifiability-and-bonus-project-idea)  
    6.1 [Verifiability for Malicious Adversary](#verifiability-for-malicious-adversary)  
    6.2 [Bandwidth-Efficient Edge Device Training](#bandwidth-efficient-edge-device-training)  
 7. [End Note](#end-note)
 
-## Capture the Hidden Trends
+## Capture Hidden Trends
 Before diving into each use case idea, I want to talk about a recurring theme among them, which has shaped the direction of this project. 
 
 
 ### Private Data Exists in Silo
 > Definition. Data point (noun): an identifiable element in a dataset.
+>
 > Definition. Data / Dataset (noun): facts and statistics collected together for reference or analysis.
 
 First, data points, by definition become meaningful in relation to the other data points. Let's say I step on a scale today and I see some number. If there are no other weights (either mine or other people's) that I want to compare it to, this number alone does not tell me any insight. When individual data points are grouped together, they form a dataset — something that can be analyzed to extract patterns or insights.
@@ -69,14 +70,15 @@ Perhaps what society ignores, or actively hides tells more about the world than 
 
 (2: This type of ground-up data collection isn't a completely new initiative. Scholars have coined several terms such as  [*counterdata*](https://datasociety.net/wp-content/uploads/2024/04/Keywords_Counterdata_Olojo_04242024.pdf)—data that is collected to contest a dominant institution or ideology, to describe the concept)
 
-## Use case 1: Crowdsourced healthcare data analysis platform
+## Usecase 1: Crowdsourced Health Data Analysis
 This use case idea represents the theme I described in the above section pretty clearly. It enables individuals to contribute (“push”) their data in a privacy-preserving manner to uncover patterns within a specific demographic. Data contributors could verify that they belong to a target demographic (again, preserving privacy—for instance via ZK) and perform local training on their own data. This will exactly allow us to "capture the hidden pattern" within private dataset, which have traditionally been difficult to collect in one place. That said, I still need to think more on whether we can assume each individual holds enough data for training a meaningful model depending on a specific use case. If they only hold a single data point, which is obviously insufficient to train a model alone, then contributors might instead submit their data to MPC nodes and delegate the training on a larger volume of data collected from various data contributors. That shifts the architecture closer to Hashcloak’s [noir-mpc-ml](https://github.com/hashcloak/noir-mpc-ml/tree/master) rather than my prototype based on “zk-federated-learning.” 
 
 
-## Usecase 2: Model Tailored to Marginalized Group
+## Usecase 2: Private Fine-tuning for Subgroups
 
 This is an idea I'm personally most excited about.
 Suppose we have a pre-trained foundation model (like LLMs) out there and some blockchain nodes hold a specific dataset representing a marginalized, smaller community. This kind of dataset is difficult to collect with "pull" style, due to their sensitive attributes, such as race, gender, disability status, sexual orientation etc, as I explained in the first section. ([Guy Roghbulm](https://guyrothblum.wordpress.com/), a research scientist at Apple explains that "it can be perfectly appropriate and necessary to use sensitive features (for ML), but frustratingly,  it's sometimes difficult for legal reasons in the US" in this [lecture](https://youtu.be/iB8Qq_Ew2aA?si=VWFbyWu8GqIOm572&t=205) from [Graduate Summer School on Algorithmic Fairness](https://www.ipam.ucla.edu/programs/summer-schools/graduate-summer-school-on-algorithmic-fairness/)) So instead, what if each client with private dataset can locally fine-tune a foundation model and generalize nuanced patterns unique to this specific subgroup? Those are **patterns that are often overlooked or averaged out** in a global model trained on a vast dataset.
+
 (Note: Initially I was vaguely thinking decentralized AI training can *reduce* algorithmic bias. I still believe it could mitigate the problem, but I think "reduce" is a wrong phrasing. I would say machine learning *inherently is a technology to create bias*. It *generalizes some patterns* within a group and predicts some outcomes for unseen data points *assuming that this pattern persists*. This directly fits the definition of creating and using bias. So I would argue, the only way we can make a *fair* use of it (with a cost of more customization/less automation) is to **narrow down the scope of its usage and carefully design the training dataset accordingly**.)
 
 ### Tailor-made Models for Marginalized Communities
@@ -97,7 +99,7 @@ On that note, one interesting method of model merge is [Evolutionary Model Merge
 This idea may be less novel, but it's likely the most realistic usecase in my opinion. As we all know, decentralized applications (dApps) have pseudonymous/anonymous users who are often privacy-conscious, which makes it difficult for dApps service providers to collect personal user profiles or track their in-app behavior. This creates a challenge to build personalized recommendation systems, which traditionally depend on a large volume of personal data collection in a central server for training ML models. 
 If decentralized & private model training can scale to support millions of clients or allow delegating such training to MPC nodes (which is more realistic), dApps could deliver personalized experiences without compromising user privacy.
 
-## Usecase 4: Privacy-preserving Model for Decoding Biometric Data
+## Usecase 4: Privacy-preserving Model Training for Decoding Biometric Data
 This idea is a bit of a jump from the others, but it was actually the initial motivation that led me to research more on private ML training. At the end of 2024, I was introduced to the field of brain-computer interface (BCI). I learned that after capturing brain signals with whatever method (e.g. EEG or ultrasound), BCIs typically involve a “decoding” process that interprets raw brain wave data into meaningful labels, such as physiological states based on its frequency. (For example, delta waves with 0.5–4 Hz are associated with deep sleep or unconsciousness, while beta waves with 13–30 Hz are linked to alertness, active thinking.) This decoding is generally powered by machine learning model inference. With public information right now, companies seem to rely on labeled datasets collected in clinical or research environments to train these models. However, it’s reasonable to assume **they may eventually seek to collect training data directly from end users**. This could merely be my speculation, but if it actually happens, it would raise serious privacy concerns and be subject to strict regulation. (You might remember [WorldCoin was suspended](https://www.bbc.co.uk/news/world-africa-66383325) in some European/African/Asian countries for failing to demonstrate proper handling of iris data) Even in a world where “privacy doesn’t sell,” regardless of how end users would feel, it won't be easy for private companies to collect such sensitive biometric data and use it for businesses. In the near future, I believe **introducing privacy-preserving training methods to commercial companies that handle biometric data will be demanded**, enabling model improvement without forcing users to compromise their sensitive data.
 
 
@@ -117,7 +119,7 @@ And here is a new idea to gain even more efficiency utilizing verifiability: In 
 This approach can significantly reduce required bandwidth and computational cost to aggregate local models on the central server, compared to transmitting full model updates each round. 
 
 ## End Note
-In this post, I listed up potential use cases and project ideas for Publicly Verifiable, Private & Collaborative AI Training.
+In this post, I listed up potential use cases and project ideas for [Publicly Verifiable, Private & Collaborative AI Training](https://yuriko.io/posts/verifiable-federated-learning/).
 I’d immensely appreciate feedback from experts in the relevant fields. Also I’m currently conducting this research independently and looking for organizations that can host me to further develop this work in partnership with external teams or clients. If you're interested, please reach out to: yuriko dot nishijima at google mail.
 
 
