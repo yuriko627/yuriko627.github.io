@@ -82,6 +82,46 @@
         )
       })
     </script>
+
+    <!-- Script for X Share Button -->
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const shareButton = document.getElementById("share-on-x")
+        if (shareButton) {
+          // The post title is taken from the <title> tag, which Pandoc populates with $title$
+          const postTitle = document.title
+          // The post URL is the current page's URL
+          const postUrl = window.location.href
+
+          // Construct the text for the tweet
+          const tweetText = encodeURIComponent(postTitle)
+          const tweetUrlParam = encodeURIComponent(postUrl)
+
+          // Construct the X share URL using traditional string concatenation
+          // to avoid issues with Pandoc's template parser.
+          let shareUrl =
+            "https://x.com/intent/tweet?text=" +
+            tweetText +
+            "&url=" +
+            tweetUrlParam +
+            " from @yurikonishijima"
+
+          // Optional: Add your Twitter handle
+          // const viaHandle = "YourXHandle"; // Replace with your actual X handle
+          // if (viaHandle) {
+          //   shareUrl += '&via=' + encodeURIComponent(viaHandle);
+          // }
+
+          // Optional: Add default hashtags
+          // const hashtags = "blog,tech"; // Comma-separated, no '#'
+          // if (hashtags) {
+          //  shareUrl += '&hashtags=' + encodeURIComponent(hashtags);
+          // }
+
+          shareButton.setAttribute("href", shareUrl)
+        }
+      })
+    </script>
   </head>
 
   <body>
@@ -90,6 +130,19 @@
         <a href="https://yuriko.io" class="back-link">← Back to all posts</a>
         <h1 id="post-title">$title$</h1>
         <span class="post-date">$date$</span>
+        <a
+          id="share-on-x"
+          href="#"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Share on X"
+        >
+          <img
+            src="/assets/x-share-button-icon.svg"
+            alt="Share on X"
+            width="60"
+          />
+        </a>
       </div>
       <div id="post-body">$body$</div>
       <div id="subscription">

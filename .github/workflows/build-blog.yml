@@ -112,7 +112,7 @@ jobs:
                 -M title="$title" \
                 -M date="$date" \
                 --from=markdown-citations+autolink_bare_uris
-              
+
               echo "Generated $htmlfile"
             fi
 
@@ -127,7 +127,7 @@ jobs:
             sort -r -k2 -t'>' temp_post_links.html > post_links.html
             rm temp_post_links.html
           fi
-          
+
           # Store the flag for whether new links were added OR if home template changed
           home_needs_update="false"
           if [ "$new_post_links" = "true" ]; then
@@ -169,6 +169,7 @@ jobs:
         shell: bash
 
       - name: Commit and push changes
+        if: env.PREVIEW != 'true'
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"

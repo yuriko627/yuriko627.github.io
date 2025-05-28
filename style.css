@@ -212,3 +212,7 @@ html, body {
 		text-align: center;
 		padding-bottom: 4rem;
 	}
+
+	#share-on-x img {
+		margin: 0.2rem;
+	}
