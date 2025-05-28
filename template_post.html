@@ -97,26 +97,13 @@
           const tweetText = encodeURIComponent(postTitle)
           const tweetUrlParam = encodeURIComponent(postUrl)
 
-          // Construct the X share URL using traditional string concatenation
-          // to avoid issues with Pandoc's template parser.
+          // Construct the X share URL
           let shareUrl =
             "https://x.com/intent/tweet?text=" +
             tweetText +
             "&url=" +
             tweetUrlParam +
             " from @yurikonishijima"
-
-          // Optional: Add your Twitter handle
-          // const viaHandle = "YourXHandle"; // Replace with your actual X handle
-          // if (viaHandle) {
-          //   shareUrl += '&via=' + encodeURIComponent(viaHandle);
-          // }
-
-          // Optional: Add default hashtags
-          // const hashtags = "blog,tech"; // Comma-separated, no '#'
-          // if (hashtags) {
-          //  shareUrl += '&hashtags=' + encodeURIComponent(hashtags);
-          // }
 
           shareButton.setAttribute("href", shareUrl)
         }

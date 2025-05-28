@@ -2,6 +2,3 @@
 .new_post_flag
 post_links.html
 posts/*/template.processed.html
-posts/*/index.html
-index.html
-about/index.html
