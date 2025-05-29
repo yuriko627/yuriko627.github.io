@@ -1,6 +1,6 @@
 ---
 title: Publicly Verifiable, Private & Collaborative AI Training
-date: 2025-04-30
+date: 2025 Apr 30
 description: An exploration of verifiable, privacy-preserving & collaborative AI model training in a decentralized network
 ---
 In this post, I will leave some notes about [Verifiable Federated Learning CLI Demo](https://github.com/yuriko627/vfl-demo) I have prototyped. 
