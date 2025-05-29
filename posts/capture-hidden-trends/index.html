@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content=""Capture Hidden Trends: Use
+Cases for Private and Decentralized ML Training"" />
+    <meta name="twitter:description" content="Use Cases for Private and
+Decentralized ML Model Training" />
+    <meta
+      property="og:image"
+      content="https://yuriko.io/posts/capture-hidden-trends/thumbnail.png"
+    />
+    <title>"Capture Hidden Trends: Use Cases for Private and
+Decentralized ML Training"</title>
+    <link rel="stylesheet" href="/style.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lora&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="/assets/favicon/apple-touch-icon.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="/assets/favicon/favicon-32x32.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="/assets/favicon/favicon-16x16.png"
+    />
+    <link rel="manifest" href="/assets/favicon/site.webmanifest" />
+
+    <!-- Scripts for content processing -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="/mathjax-config.js" defer></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+      defer
+    ></script>
+    <script type="module">
+      import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs"
+      mermaid.initialize({ startOnLoad: false })
+      window.mermaidRender = (el) => mermaid.run({ nodes: [el] })
+
+      window.addEventListener("DOMContentLoaded", () => {
+        // Typeset MathJax
+        if (window.MathJax && MathJax.typesetPromise) {
+          MathJax.typesetPromise()
+        }
+
+        // Render Mermaid diagrams
+        const mermaidBlocks = document.querySelectorAll(
+          "pre code.language-mermaid, pre.mermaid > code"
+        )
+        mermaidBlocks.forEach((block) => {
+          const code = block.textContent
+          const div = document.createElement("div")
+          div.className = "mermaid"
+          div.textContent = code
+          block.parentElement.replaceWith(div)
+          window.mermaidRender(div)
+        })
+      })
+    </script>
+
+    <!-- AnchorJS for clickable headlines -->
+    <script src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.1/anchor.min.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        var anchors = new AnchorJS({
+          icon: "🔗",
+          placement: "left",
+          visible: "hover"
+        })
+        anchors.add(
+          "#post-body h2, #post-body h3, #post-body h4, #post-body h5, #post-body h6"
+        )
+      })
+    </script>
+
+    <!-- Script for X Share Button -->
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const shareButton = document.getElementById("share-on-x")
+        if (shareButton) {
+          // The post title is taken from the <title> tag
+          const postTitle = document.title
+          // The post URL is the current page's URL
+          const postUrl = window.location.href
+
+          // Construct the text for the tweet
+          const tweetText = encodeURIComponent(postTitle)
+          const tweetUrlParam = encodeURIComponent(postUrl)
+
+          // Construct the X share URL
+          let shareUrl =
+            "https://x.com/intent/tweet?text=" +
+            tweetText +
+            "&url=" +
+            tweetUrlParam +
+            " from @yurikonishijima"
+
+          shareButton.setAttribute("href", shareUrl)
+        }
+      })
+    </script>
+  </head>
+
+  <body>
+    <div id="content">
+      <div class="post-header">
+        <a href="https://yuriko.io" class="back-link">← Back to all posts</a>
+        <h1 id="post-title">"Capture Hidden Trends: Use Cases for
+Private and Decentralized ML Training"</h1>
+        <span class="post-date">2025 May 30</span>
+        <a
+          id="share-on-x"
+          href="#"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Share on X"
+        >
+          <img
+            src="/assets/x-share-button-icon.svg"
+            alt="Share on X"
+            width="60"
+          />
+        </a>
+      </div>
+      <div id="post-body"><p>Since the beginning of this year, I’ve been
+exploring the intersection of cryptography and machine learning and
+thinking what’s important work on in the long term. In my last post, I
+shared a technical overview of the first iteration of my new project: <a
+href="https://yuriko.io/posts/verifiable-federated-learning/">Publicly
+Verifiable, Private &amp; Collaborative AI Training</a> (For brevity,
+I’ll call it private &amp; decentralized ML model training from now
+on).</p>
+<p>To summarize, I prototyped a system that allows mutually distrusting
+parties in a decentralized protocol to collaboratively train a machine
+learning model, without exposing their private dataset to one another.
+All participants in the system use zero-knowledge proofs to verify the
+integrity of their local computations, including client-side training
+and server-side model aggregation.</p>
+<p>In this post, I will explore potential use cases and social
+implications of this technology that I’ve been reflecting on.</p>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol type="1">
+<li><a href="#capture-hidden-trends">Capture Hidden Trends</a><br />
+1.1 <a href="#private-data-exists-in-silo">Private Data Exists in
+Silo</a><br />
+1.2 <a href="#structural-privilege-in-data-collection">Structural
+Privilege in Data Collection</a><br />
+1.3 <a href="#pull-style-push-style-data-science">Pull-style →
+Push-style Data Science</a><br />
+</li>
+<li><a href="#usecase-1-crowdsourced-health-data-analysis">Usecase 1:
+Crowdsourced Health Data Analysis</a></li>
+<li><a href="#usecase-2-private-fine-tuning-for-subgroups">Usecase 2:
+Private Fine-tuning for Subgroups</a><br />
+3.1 <a
+href="#tailor-made-models-for-marginalized-communities">Tailor-made
+Models for Marginalized Communities</a><br />
+3.2 <a href="#exporting-crypto-credit-scoring-model-to-tradfi">Exporting
+Crypto Credit Scoring Model to TradFi</a><br />
+3.3 <a href="#model-merging-for-intersectional-demographics">Model
+Merging for Intersectional Demographics</a><br />
+</li>
+<li><a href="#usecase-3-recommendation-system-for-dapps">Usecase 3:
+Recommendation System for dApps</a></li>
+<li><a
+href="#usecase-4-privacy-preserving-model-training-for-decoding-biometric-data">Usecase
+4: Privacy-preserving Model Training for Decoding Biometric
+Data</a></li>
+<li><a href="#note-on-verifiability-and-bonus-project-idea">Note on
+Verifiability and Bonus Project Idea</a><br />
+6.1 <a href="#verifiability-for-malicious-adversary">Verifiability for
+Malicious Adversary</a><br />
+6.2 <a
+href="#bandwidth-efficient-edge-device-training">Bandwidth-Efficient
+Edge Device Training</a><br />
+</li>
+<li><a href="#end-note">End Note</a></li>
+</ol>
+<h2 id="capture-hidden-trends">Capture Hidden Trends</h2>
+<p>Before diving into each use case idea, I want to talk about a
+recurring theme among them, which has shaped the direction of this
+project.</p>
+<h3 id="private-data-exists-in-silo">Private Data Exists in Silo</h3>
+<blockquote>
+<p>Definition. Data point (noun): an identifiable element in a
+dataset.</p>
+<p>Definition. Data / Dataset (noun): facts and statistics collected
+together for reference or analysis.</p>
+</blockquote>
+<p>First, <strong>data points</strong>, by definition <strong>become
+meaningful in relation to the other data points</strong>. Let’s say I
+step on a scale today and I see some number. If there are no other
+weights (either mine or other people’s) that I want to compare it to,
+this number alone does not tell me any insight. When individual data
+points are grouped together, they form a dataset — something that can be
+analyzed to extract patterns or insights.</p>
+<p>Second, <em>some</em> data points exist in silos, and <strong>only
+those in positions of power and those with access to sufficient
+infrastructure are able to collect them</strong> (not necessarily with
+proper consent from the data owners but that’s another point)
+<strong>and form a dataset</strong>.</p>
+<p>For example, imagine I wanted to compare my income to that of other
+female, Asian cryptography researchers living in Europe. This would be
+extremely difficult for the following reasons:</p>
+<ol type="1">
+<li><p>As an individual unaffiliated with any scientific institution, I
+have no way to directly coordinate with people in this specific
+demographic to collect such data.</p></li>
+<li><p>Even if a global income dataset existed, filtering it by such
+personal attributes—female, Asian, based in Europe—would be nearly
+impossible due to privacy concerns.</p></li>
+</ol>
+<h3 id="structural-privilege-in-data-collection">Structural Privilege in
+Data Collection</h3>
+<p>I see a <strong>structural privilege</strong> here. Data tends to get
+collected and studied when powerful institutions decide to do so, in a
+way that they designed.</p>
+<p>For those of you who’re unfamiliar with the concept of structural
+privilege (or oppression), historically various systems in society have
+been designed by a dominant group in a way that serves their own
+interests. As a result, other marginalized groups have faced implicit
+systemic disadvantages, often because their needs are not reflected
+during the design process—intentionally or unintentionally.</p>
+<p>Prime example includes the <a
+href="https://data-feminism.mitpress.mit.edu/pub/vi8obxh7#nn6fq2gj2xv">history
+of voting rights in the US</a>, but more specifically for data science,
+there is even a category of diseases called <a
+href="https://www.who.int/news-room/questions-and-answers/item/neglected-tropical-diseases">Neglected
+Tropical Diseases (NTDs)</a> which are common in low-income populations
+in developing countries. It affects over 1 billion people worldwide, but
+is under-studied with a lack of market incentive since pharma companies
+make little profit from treating poor populations.</p>
+<figure style="text-align: center; margin: 2rem;">
+<p><img src="https://hackmd.io/_uploads/r1fvoWIfxe.png)" style="margin: 0;"/></p>
+<figcaption style="font-style: italic; margin-top: 0.5rem;">
+Number of people requiring interventions against neglected tropical
+diseases by
+<a href="https://ourworldindata.org/grapher/interventions-ntds-sdgs" target="_blank" rel="noopener noreferrer">Our
+World In Data</a>
+</figcaption>
+</figure>
+<p>Another example of structural disadvantage appears in automotive
+safety testing, where crash tests have long prioritized dummies modeled
+on the “average male body.” Since the 1960s when testing started,
+average female dummies were either absent or used in ways that ignored
+key anatomical differences, often justified by funding constraints. As a
+result, research has shown that <a
+href="https://news.virginia.edu/content/study-new-cars-are-safer-women-most-likely-suffer-injury">women
+face as much as 73% higher risks of fatality or serious injury in car
+crashes</a> in the past. Intuitively thinking, it’s unlikely that this
+systematic exclusion of women from safety design decisions is unrelated
+to the male-dominated nature of the automotive industry. (another
+resource that explains the historical context deeper is <a
+href="https://www.consumerreports.org/car-safety/crash-test-bias-how-male-focused-testing-puts-female-drivers-at-risk/">here</a>)</p>
+<figure style="text-align: center; margin: 2rem;">
+<p><img src="https://hackmd.io/_uploads/SkhAgW8Mel.jpg)" style="margin: 0;"/></p>
+<figcaption style="font-style: italic; margin-top: 0.5rem;">
+Managing Director Sir David Brown stands beside a damaged Aston Martin
+after crash testing, October 17th 1968.
+</figcaption>
+</figure>
+<p>As we can see from these examples, the disparity between prioritized
+and ignored data stems from the combination of <strong>pursuit for
+profitable research</strong> (which isn’t limited to industry; academic
+research also depends on funding, often prioritizing data collection and
+analysis aligned with industry interests) and the <strong>dominance of
+privileged group</strong> in decision-making positions.</p>
+<h3 id="pull-style-push-style-data-science">Pull-style → Push-style Data
+Science</h3>
+<p>What happens if we can gain more <strong>agency</strong> over which
+of <em>our</em> data we collect and how we make use of it? More
+precisely, what if we complemented<sup>1</sup> the conventional
+<em>pull</em> style data science, where institutions decide which data
+is worth collecting, with a <em>push</em> style, where individuals
+proactively contribute their data (in a privacy-preserving way,
+otherwise this doesn’t work)? Such a shift could enable
+<strong>collaborative data analysis among people who share similar
+interests, goals, or curiosities</strong>.</p>
+<p>I believe there are <strong>many hidden patterns within private
+data</strong> scattered across the world. There is an invisible trend
+embedded in a <a
+href="https://mimionuoha.com/the-library-of-missing-datasets">missing
+dataset</a>—datasets that should, but don’t exist yet for structural
+oppression, but <strong>the individuals hold this data haven’t had the
+means to effectively coordinate for privacy concerns</strong>.</p>
+<figure style="text-align: center; margin: 2rem;">
+<p><img src="https://hackmd.io/_uploads/Skwy7bIGel.jpg)" style="margin: 0;"/></p>
+<figcaption style="font-style: italic; margin-top: 0.5rem;">
+<a href="https://mimionuoha.com/the-library-of-missing-datasets-v-20" target="_blank" rel="noopener noreferrer">The
+Library of Missing Datasets 2.0 (2018)</a> - mixed media installation
+focused on blackness
+</figcaption>
+</figure>
+<p>Perhaps what society ignores, or actively hides tells more about the
+world than what it highlights. With decentralized &amp; private model
+training, we can <strong>extract these patterns without exposing the
+underlying data itself, and make the invisible visible, on our
+terms</strong><sup>2</sup>.</p>
+<p>(1: I use the word <em>complement</em> intentionally here. I don’t
+mean to dismiss the work that institutional data scientists have done so
+far, nor am I trying to create a dichotomy where centralized data
+science is “bad” and decentralized data science is inherently “good.”
+However, I believe more and more individuals without formal academic
+training or institutional affiliation will become capable of conducting
+valuable experiments and data analysis. I’m curious to see what hidden
+truths might emerge if independent researchers with more diverse
+backgrounds and original perspectives are given free access to whatever
+datasets they get curious to study.)</p>
+<p>(2: This type of ground-up data collection isn’t a completely new
+initiative. Scholars have coined several terms such as <a
+href="https://datasociety.net/wp-content/uploads/2024/04/Keywords_Counterdata_Olojo_04242024.pdf"><em>counterdata</em></a>—data
+that is collected to contest a dominant institution or ideology, to
+describe the concept)</p>
+<h2 id="usecase-1-crowdsourced-health-data-analysis">Usecase 1:
+Crowdsourced Health Data Analysis</h2>
+<p>This use case idea represents the theme I described in the above
+section pretty clearly. It enables individuals to contribute (“push”)
+their data in a privacy-preserving manner to uncover patterns within a
+specific demographic. Data contributors could verify that they belong to
+a target demographic (again, preserving privacy—for instance via ZK) and
+perform local training on their own data. This will exactly allow us to
+“capture hidden patterns” within private dataset, which have
+traditionally been difficult to collect in one place. That said, I still
+need to think more on whether we can assume each individual holds enough
+data to train a meaningful model, which depends on specific use cases.
+If they only hold a single data point, which is obviously insufficient
+to train a model alone, then contributors might instead submit their
+data to MPC nodes and delegate the training on a larger volume of data
+collected from various data contributors. That shifts the architecture
+closer to Hashcloak’s <a
+href="https://github.com/hashcloak/noir-mpc-ml/tree/master">noir-mpc-ml</a>
+rather than my prototype based on “zk-federated-learning.”</p>
+<h2 id="usecase-2-private-fine-tuning-for-subgroups">Usecase 2: Private
+Fine-tuning for Subgroups</h2>
+<p>This is an idea I’m personally most excited about. Suppose we have a
+pre-trained foundation model (like LLMs) out there and some blockchain
+nodes hold a specific dataset representing a marginalized, smaller
+community. This kind of dataset is difficult to collect with “pull”
+style, due to their sensitive attributes, such as race, gender,
+disability status, sexual orientation etc, as I explained in the first
+section. (<a href="https://guyrothblum.wordpress.com/">Guy Roghbulm</a>,
+a research scientist at Apple explains that “it can be perfectly
+appropriate and necessary to use sensitive features (for ML), but
+frustratingly, it’s sometimes difficult for legal reasons in the US” in
+this <a
+href="https://youtu.be/iB8Qq_Ew2aA?si=VWFbyWu8GqIOm572&amp;t=205">lecture</a>
+from <a
+href="https://www.ipam.ucla.edu/programs/summer-schools/graduate-summer-school-on-algorithmic-fairness/">Graduate
+Summer School on Algorithmic Fairness</a>) So instead, what if each
+client with private dataset can locally fine-tune a foundation model and
+generalize nuanced patterns unique to this specific subgroup? Those are
+<strong>patterns that are often overlooked or averaged out</strong> in a
+global model trained on a vast dataset.</p>
+<figure style="text-align: center; margin: 2rem;">
+<p><img src="https://hackmd.io/_uploads/H1BkibUflg.png" style="margin: 0;"/></p>
+<figcaption style="font-style: italic; margin-top: 0.5rem;">
+<a href="https://dwork.seas.harvard.edu/" target="_blank" rel="noopener noreferrer">Cynthia
+Dwork </a>explains the cause of algorithmic bias such as face
+recognition system failing to detect black woman’s face until she puts a
+white mask
+</figcaption>
+</figure>
+<p>(Note: Initially I was vaguely thinking decentralized AI training can
+<em>reduce</em> algorithmic bias. I still believe it could mitigate the
+problem, but I think “reduce” is a wrong phrasing. I would say machine
+learning <em>inherently is a technology to create bias</em>. It
+<em>generalizes some patterns</em> within a group and predicts some
+outcomes for unseen data points <em>assuming that this pattern
+persists</em>. This directly fits the definition of creating and using
+bias. So I would argue, the only way we can make a <em>fair</em> use of
+it (with a cost of more customization/less automation) is to
+<strong>narrow down the scope of its usage and carefully design the
+training dataset accordingly</strong>.)</p>
+<h3 id="tailor-made-models-for-marginalized-communities">Tailor-made
+Models for Marginalized Communities</h3>
+<p>For example, this “narrowly scoped, tailored” model can be used in
+tasks such as <strong>financial risk assessment, medical detection, and
+hiring for marginalized communities</strong>. Institutions that care
+about creating more fairness and equal opportunities for them such as <a
+href="https://en.wikipedia.org/wiki/Community_development_financial_institution">Community
+Development Financial Institution (CDFIs)</a> or <a
+href="https://www.outforundergrad.org/">Out For Undergrad(O4U)</a> would
+be interested in building this tailor-made model without collecting
+required training data with sensitive attributes. What’s even cooler is,
+companies and public institutions will <strong>be able to publicly
+verify their design of training dataset</strong> tailored to specific
+communities, so that they can prove their intention for fairness towards
+these groups.</p>
+<h3 id="exporting-crypto-credit-scoring-model-to-tradfi">Exporting
+Crypto Credit Scoring Model to TradFi</h3>
+<p>Another potentially impactful idea is to <strong>privately build a
+credit scoring model for unbanked individuals, inclding their real-world
+sensitive attributes while keeping them private</strong>. This model
+could then be exported to traditional financial institutions, signaling
+the patterns of real-world attributes for those who have been
+responsibly borrowing money in crypto. This would create new financial
+opportunities/pathway to high-street banks even for those who began with
+zero credit in traditional finance.</p>
+<h3 id="model-merging-for-intersectional-demographics">Model Merging for
+Intersectional Demographics</h3>
+<p>Additional idea: Now, I’m curious to see what happens if we merge
+each of these fine-tuned models and build an <strong>intersectional
+model</strong>. I suppose such a combined model would <strong>generalize
+patterns in intersectional identities better than the individual models
+alone</strong>. For example, in a hiring context, merging a model that
+identifies strong candidates from one minority group (e.g. Hispanic)
+with another focused on a different group (e.g. women) could improve
+performance for those who belong to both groups (e.g. Hispanic women).
+Another example is, you can also ask a question like “What’s the
+likelihood of <em>White male vegans</em> developing osteoporosis?” This
+kind of question involves overlapping personal identity factors that
+single-group models may not capture well.</p>
+<figure style="text-align: center; margin: 2rem;">
+<p><img src="https://hackmd.io/_uploads/SJB5HMUGxx.png" style="margin: 0;"/></p>
+<figcaption style="font-style: italic; margin-top: 0.5rem;">
+My mental model of intersectional models. Each circle represents
+fine-tuned models. Overlapped intersections represents niche communities
+</figcaption>
+</figure>
+<p>Following these examples, I believe model merging techniques could be
+extremely powerful. If we have access to models trained on private data
+from smaller demographic groups, we can combine them to build
+<strong>custom models tailored to even more niche communities</strong>
+we want to make predictions about.</p>
+<p>On that note, one interesting method of model merge is <a
+href="https://sakana.ai/evolutionary-model-merge/">Evolutionary Model
+Merge</a>. What’s special about this method is it automates merging
+models with different specialities and modalities such as Japanese-LLM
+with mathematical reasoning capability or Image Generation Model.</p>
+<h2 id="usecase-3-recommendation-system-for-dapps">Usecase 3:
+Recommendation System for Dapps</h2>
+<p>This idea may be less novel, but it’s likely the most realistic
+usecase in my opinion. As we all know, decentralized applications
+(dApps) have pseudonymous/anonymous users often privacy-conscious, which
+makes it difficult for dApps service providers to collect personal user
+profiles or track their in-app behavior. This creates a challenge to
+build personalized recommendation systems, which traditionally depend on
+a large volume of personal data collection in a central server for
+training ML models. If decentralized &amp; private model training can
+scale to support millions of clients or allow delegating such training
+to MPC nodes (which is more realistic), dApps could deliver personalized
+experiences without compromising user privacy. (My related <a
+href="https://forum.devcon.org/t/dip-65-private-recommendation-system-for-devconpassport-app/5347">attempt</a>
+of application developement)</p>
+<h2
+id="usecase-4-privacy-preserving-model-training-for-decoding-biometric-data">Usecase
+4: Privacy-preserving Model Training for Decoding Biometric Data</h2>
+<p>This idea is a bit of a jump from the others, but it was actually the
+initial motivation that led me to research more on private ML model
+training. At the end of 2024, I was introduced to the field of
+brain-computer interface (BCI). I learned that after capturing brain
+signals with whatever method (e.g. EEG or ultrasound), BCIs typically
+involve a “decoding” process that interprets raw brain wave data into
+meaningful labels such as physiological states, based on its frequency.
+(For example, delta waves with 0.5–4 Hz are associated with deep sleep
+or unconsciousness, while beta waves with 13–30 Hz are linked to
+alertness, active thinking.) This decoding is generally powered by
+machine learning model inference. With public information right now,
+companies seem to rely on labeled datasets collected in clinical or
+research environments to train these models. However, it’s reasonable to
+assume <strong>they may eventually seek to collect training data
+directly from end users</strong>. This could merely be my speculation,
+but if it actually happens, it would raise serious privacy concerns and
+be subject to strict regulation. (You might remember <a
+href="https://www.bbc.co.uk/news/world-africa-66383325">WorldCoin was
+suspended</a> in some European/African/Asian countries for failing to
+demonstrate proper handling of iris data) Even in a world where “privacy
+doesn’t sell,” regardless of how end users would feel, it won’t be easy
+for private companies to collect such sensitive biometric data and use
+it for businesses. In the near future, I believe <strong>introducing
+privacy-preserving training methods to commercial companies that handle
+biometric data will be demanded</strong>, enabling model improvement
+without forcing users to compromise their sensitive data.</p>
+<h2 id="note-on-verifiability-and-bonus-project-idea">Note on
+Verifiability and Bonus Project Idea</h2>
+<h3 id="verifiability-for-malicious-adversary">Verifiability for
+Malicious Adversary</h3>
+<p>I’ve been exploring additional motivations for adding verifiability
+to federated learning (FL), beyond the aforementioned cases of deploying
+FL on a decentralized network (where participants are mutually
+distrusting and thus require proof of correct local computations).</p>
+<p>In cryptography world, this is a setting that demands
+<strong>security against malicious adversaries</strong>, as opposed to
+the semi-honest (or honest-but-curious) adversary model. (A helpful
+explanation can be found <a
+href="https://crypto.stackexchange.com/questions/102283/security-against-malicious-adversaries-in-mpc">here</a>).
+Traditionally, federated learning has been applied in collaborations
+where a baseline level of trust or business alignment already exists
+(mostly equivalent to ‘semi-honest’ setting)—such as between different
+branches of the same bank (e.g., U.S. and European divisions), or across
+hospitals within the same region. In these cases, FL is often used not
+because the parties distrust each other, but because data sharing is
+restricted by regulations like GDPR. However, general trend in ML
+training is that the architectures have been shifting toward
+<strong>distributed edge device training</strong> for better
+scalability. Edge device training exactly fits in the definition of a
+setting which requires security against malicious adversaries.</p>
+<h3 id="bandwidth-efficient-edge-device-training">Bandwidth-Efficient
+Edge Device Training</h3>
+<p>And here is a new idea to gain even more efficiency utilizing
+verifiability: In some cases, local models trained on edge devices can
+reach comparable accuracy even if their parameters differ slightly. That
+means they may not need to synchronize with the central server to build
+a global model as frequently. During these “idle” periods, each edge
+device could instead submit a succinct proof attesting that:</p>
+<ol type="1">
+<li>Their model was trained correctly, and</li>
+<li>The resulting accuracy remains within an acceptable bound.</li>
+</ol>
+<p>This approach can significantly reduce required bandwidth and
+computational cost to aggregate local models on the central server,
+compared to transmitting full model updates each round.</p>
+<h2 id="end-note">End Note</h2>
+<p>In this post, I listed up potential use cases and project ideas for
+<a
+href="https://yuriko.io/posts/verifiable-federated-learning/">Publicly
+Verifiable, Private &amp; Collaborative AI Training</a>. I’d immensely
+appreciate feedback from experts in the relevant fields. Also I’m
+currently conducting this research independently and looking for
+organizations that can host me to further develop this work in
+partnership with external teams or clients. If you’re interested, please
+reach out to: yuriko dot nishijima at google mail.</p>
+<hr />
+<p>Special thanks to <a href="https://shibashintaro.com/">Shintaro</a>,
+<a href="https://x.com/luksgrin">Lucas</a> (you can check his <a
+href="https://hackmd.io/@jdsIUqinSz2KRzqrrqU9Ig/SyE5qp2bex">commentary</a>
+for this post), and <a
+href="https://gitlab.com/OctavioDuarte/">Octavio</a>, for valuable
+feedback and insightful discussions.</p>
+<p>If you have any feedback or comments on this post and are willing to
+engage in a meaningful discussion, please leave them in the HackMD
+draft: <a href="https://hackmd.io/@yuriko/Bk28WMRxgl"
+class="uri">https://hackmd.io/@yuriko/Bk28WMRxgl</a></p></div>
+      <div id="subscription">
+        <a href="https://mailchi.mp/97fa3be33105/indefinite"
+          >Subscribe to receive new posts</a
+        >
+      </div>
+    </div>
+  </body>
+</html>
