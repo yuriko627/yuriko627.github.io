@@ -1,5 +1,6 @@
 ---
-title: Capture Hidden Trends: Use Cases for Private and Decentralized ML Training
+title: >
+   Capture Hidden Trends: Use Cases for Private and Decentralized ML Training
 date: 2025 May 30
 description: Use Cases for Private and Decentralized ML Model Training
 ---
