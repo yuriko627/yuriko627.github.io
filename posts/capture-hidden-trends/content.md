@@ -18,7 +18,7 @@ In this post, I will explore potential use cases and social implications of this
 2. [Usecase 1: Crowdsourced Health Data Analysis](#usecase-1-crowdsourced-health-data-analysis)
 3. [Usecase 2: Private Fine-tuning for Vulnerable Subgroups](#usecase-2-private-fine-tuning-for-vulnerable-subgroups)  
    3.1 [Tailor-made Models for Marginalized Communities](#tailor-made-models-for-marginalized-communities)  
-   3.2 [Exporting Crypto Credit Score to TradFi for the Unbanked](#exporting-crypto-credit-score-to-tradfi)  
+   3.2 [Exporting Crypto Credit Score to TradFi for the Unbanked](#exporting-crypto-credit-score-to-tradfi-for-the-unbanked)  
    3.3 [Model Merging for Intersectional Demographics](#model-merging-for-intersectional-demographics)  
 4. [Usecase 3: Recommendation System for dApps](#usecase-3-recommendation-system-for-dapps)
 5. [Usecase 4: Privacy-preserving Model Training for Decoding Biometric Data](#usecase-4-privacy-preserving-model-training-for-decoding-biometric-data)
